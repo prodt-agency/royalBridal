@@ -9,17 +9,28 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
+}
+
+model Admin {
+  id Int @id @default(autoincrement())
+
+  name         String
+  email        String @unique
+  passwordHash String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String
   slug String @unique
 
-  products Product[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Product {
@@ -30,17 +41,18 @@ model Product {
 
   description String?
 
-  price Decimal @db.Decimal(10,2)
-  discountPrice Decimal? @db.Decimal(10,2)
+  price         Decimal  @db.Decimal(10, 2)
+  discountPrice Decimal? @db.Decimal(10, 2)
 
   isFeatured Boolean @default(false)
 
   categoryId Int
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
   images ProductImage[]
+  sizes  ProductSize[]
 
-  sizes ProductSize[]
+  orderItems OrderItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,21 +61,89 @@ model Product {
 model ProductImage {
   id Int @id @default(autoincrement())
 
-  url String
-  altText String?
-  displayOrder Int @default(1)
+  url          String
+  altText      String?
+  displayOrder Int     @default(1)
 
   productId Int
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductSize {
   id Int @id @default(autoincrement())
-  
-  size String
+
+  size      String
   productId Int
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, size])
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+
+  orderNumber String @unique
+
+  customerName String
+  email        String?
+  phone        String
+
+  addressLine1 String
+  addressLine2 String?
+
+  city    String
+  state   String
+  pincode String
+
+  totalAmount Decimal @db.Decimal(10, 2)
+
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus
+  orderStatus   OrderStatus
+
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id Int @id @default(autoincrement())
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  selectedSize String
+
+  quantity Int
+
+  price Decimal @db.Decimal(10, 2)
+}
+
+enum PaymentMethod {
+  COD
+  RAZORPAY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PACKED
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }
