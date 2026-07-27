@@ -18,15 +18,29 @@ model Admin {
   name         String
   email        String @unique
   passwordHash String
+  refreshTokens RefreshToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  tokenHash String   @unique
+  expiresAt DateTime
+  adminId   Int
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+}
+
 model Category {
-  id   Int    @id @default(autoincrement())
-  name String
-  slug String @unique
+  id     Int     @id @default(autoincrement())
+  name   String
+  slug   String  @unique
+  image  String?
+  active Boolean @default(true)
 
   products  Product[]
   createdAt DateTime  @default(now())
@@ -39,12 +53,13 @@ model Product {
   name String
   slug String @unique
 
-  description String?
+  description String? @db.Text
 
   price         Decimal  @db.Decimal(10, 2)
-  discountPrice Decimal? @db.Decimal(10, 2)
+  salePrice Decimal? @db.Decimal(10, 2)
 
-  isFeatured Boolean @default(false)
+  featured Boolean @default(false)
+  active   Boolean @default(true)
 
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
@@ -61,9 +76,8 @@ model Product {
 model ProductImage {
   id Int @id @default(autoincrement())
 
-  url          String
-  altText      String?
-  displayOrder Int     @default(1)
+  imageUrl  String
+  sortOrder Int @default(0)
 
   productId Int
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -102,13 +116,26 @@ model Order {
   paymentStatus PaymentStatus
   orderStatus   OrderStatus
 
-  razorpayOrderId   String?
-  razorpayPaymentId String?
-
   orderItems OrderItem[]
+  payment    Payment?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id                Int           @id @default(autoincrement())
+  orderId           Int           @unique
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method            PaymentMethod
+  status            PaymentStatus @default(PENDING)
+  amount            Decimal       @db.Decimal(10, 2)
+  razorpayOrderId   String?       @unique
+  razorpayPaymentId String?       @unique
+  razorpaySignature String?
+  failureReason     String?       @db.Text
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }
 
 model OrderItem {
@@ -142,7 +169,7 @@ enum PaymentStatus {
 enum OrderStatus {
   PENDING
   CONFIRMED
-  PACKED
+  PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
