@@ -1,0 +1,7 @@
+import { z } from 'zod';
+const id = z.coerce.number().int().positive(); const statuses = ['PENDING', 'CONFIRMED', 'PROCESSING', 'PACKED', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED', 'REFUNDED']; const page = z.coerce.number().int().min(1).default(1); const limit = z.coerce.number().int().min(1).max(100).default(20);
+export const orderListSchema = z.object({ body: z.object({}), params: z.object({}), query: z.object({ page, limit, search: z.string().trim().max(100).optional(), status: z.enum(statuses).optional(), paymentStatus: z.enum(['PENDING', 'PAID', 'FAILED', 'REFUNDED']).optional(), paymentMethod: z.enum(['COD', 'RAZORPAY']).optional(), sort: z.enum(['createdAt', 'totalAmount', 'orderNumber']).default('createdAt'), order: z.enum(['asc', 'desc']).default('desc') }) });
+export const orderIdSchema = z.object({ body: z.object({}), params: z.object({ id }), query: z.object({}) });
+export const orderUpdateSchema = z.object({ body: z.object({ notes: z.string().trim().max(2000).nullable().optional(), shippingMethod: z.string().trim().min(2).max(50).optional() }).refine((value) => Object.keys(value).length > 0), params: z.object({ id }), query: z.object({}) });
+export const orderStatusSchema = z.object({ body: z.object({ status: z.enum(statuses), note: z.string().trim().max(2000).optional() }), params: z.object({ id }), query: z.object({}) });
+export const orderCancelSchema = z.object({ body: z.object({ note: z.string().trim().max(2000).optional() }), params: z.object({ id }), query: z.object({}) });
