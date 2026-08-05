@@ -1,0 +1,1 @@
+import { success } from '../utils/api-response.js'; import { checkoutService } from '../services/checkout.service.js'; export const checkoutController = { create: async (req, res) => success(res, { statusCode: 201, message: 'Checkout created.', data: await checkoutService.create(req.validated.body) }) };

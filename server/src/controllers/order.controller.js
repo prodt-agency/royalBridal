@@ -1,0 +1,3 @@
+import { success } from '../utils/api-response.js'; import { orderService } from '../services/order.service.js';
+const reply = (message, action) => async (req, res) => success(res, { message, data: await action(req) });
+export const orderController = { list: reply('', (req) => orderService.list(req.validated.query)), get: reply('', (req) => orderService.get(req.validated.params.id)), update: reply('Order updated.', (req) => orderService.update(req.validated.params.id, req.validated.body)), status: reply('Order status updated.', (req) => orderService.transition(req.validated.params.id, req.validated.body, req.admin.sub)), cancel: reply('Order cancelled.', (req) => orderService.cancel(req.validated.params.id, req.validated.body.note, req.admin.sub)) };

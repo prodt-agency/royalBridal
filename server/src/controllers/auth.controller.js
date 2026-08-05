@@ -1,0 +1,6 @@
+import { authService } from '../services/auth.service.js';
+import { success } from '../utils/api-response.js'; import { env } from '../config/env.js';
+const options = { httpOnly: true, secure: env.nodeEnv === 'production', sameSite: 'strict', path: '/api/admin', maxAge: env.refreshTokenDays * 24 * 60 * 60 * 1000 };
+const sendSession = (res, result) => { res.cookie('refreshToken', result.refreshToken, options); return success(res, { message: 'Authentication successful.', data: { admin: result.admin, accessToken: result.accessToken } }); };
+const context = (req) => ({ userAgent: req.get('user-agent')?.slice(0, 512), ipAddress: req.ip });
+export const authController = { login: async (req, res) => sendSession(res, await authService.login(req.validated.body, context(req))), refresh: async (req, res) => sendSession(res, await authService.refresh(req.cookies.refreshToken, context(req))), logout: async (req, res) => { await authService.logout(req.cookies.refreshToken); res.clearCookie('refreshToken', options); return success(res, { message: 'Logged out successfully.' }); }, logoutAll: async (req, res) => { await authService.logoutAll(req.admin.sub); res.clearCookie('refreshToken', options); return success(res, { message: 'All sessions logged out successfully.' }); }, me: async (req, res) => success(res, { data: { admin: req.admin } }) };

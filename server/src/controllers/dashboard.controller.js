@@ -1,0 +1,1 @@
+import { success } from '../utils/api-response.js'; import { dashboardService } from '../services/dashboard.service.js'; export const dashboardController = { overview: async (req, res) => success(res, { data: await dashboardService.overview() }) };
