@@ -1,0 +1,14 @@
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import { env } from '../config/env.js';
+import { AppError } from '../utils/app-error.js';
+import { adminRepository } from '../repositories/admin.repository.js';
+import { logger } from '../utils/logger.js';
+const hash = (value) => crypto.createHash('sha256').update(value).digest('hex');
+const accessToken = (admin) => jwt.sign({ sub: admin.id, email: admin.email, role: admin.role }, env.jwtAccessSecret, { expiresIn: env.jwtAccessExpiresIn });
+const refreshToken = () => crypto.randomBytes(48).toString('base64url');
+const refreshExpiry = () => new Date(Date.now() + env.refreshTokenDays * 24 * 60 * 60 * 1000);
+const issueTokens = async (admin, context, familyId = crypto.randomUUID()) => { const refresh = refreshToken(); await adminRepository.createRefreshToken({ adminId: admin.id, tokenHash: hash(refresh), expiresAt: refreshExpiry(), familyId, userAgent: context.userAgent, ipAddress: context.ipAddress }); return { accessToken: accessToken(admin), refreshToken: refresh }; };
+const publicAdmin = (admin) => ({ id: admin.id, name: admin.name, email: admin.email, role: admin.role });
+export const authService = { login: async ({ email, password }, context) => { const admin = await adminRepository.findByEmail(email.toLowerCase()); if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) { logger.warn('admin_login_failed', { email, ...context }); throw new AppError('Invalid email or password.', 401); } const tokens = await issueTokens(admin, context); logger.info('admin_login', { adminId: admin.id, ...context }); return { admin: publicAdmin(admin), ...tokens }; }, refresh: async (token, context) => { if (!token) throw new AppError('Refresh token required.', 401); const stored = await adminRepository.findRefreshToken(hash(token)); if (!stored || stored.expiresAt <= new Date()) throw new AppError('Invalid or expired refresh token.', 401); if (stored.revokedAt) { await adminRepository.revokeTokenFamily(stored.familyId); throw new AppError('Refresh token reuse detected.', 401); } await adminRepository.revokeRefreshToken(stored.id); return { admin: publicAdmin(stored.admin), ...(await issueTokens(stored.admin, context, stored.familyId)) }; }, logout: async (token) => { if (!token) return; const stored = await adminRepository.findRefreshToken(hash(token)); if (stored && !stored.revokedAt) await adminRepository.revokeRefreshToken(stored.id); }, logoutAll: (adminId) => adminRepository.revokeTokensForAdmin(adminId) };
