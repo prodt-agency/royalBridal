@@ -1,27 +1,11 @@
-function SectionHeading({
-  title,
-  subtitle,
-  align = "center",
-}) {
-  return (
-    <div
-      className={`mb-12 ${
-        align === "center"
-          ? "text-center"
-          : "text-left"
-      }`}
-    >
-      {subtitle && (
-        <p className="mb-2 uppercase tracking-[0.25em] text-sm text-rose-700">
-          {subtitle}
-        </p>
-      )}
+import clsx from "clsx";
 
-      <h2 className="text-3xl font-bold md:text-4xl">
-        {title}
-      </h2>
-    </div>
-  );
+function SectionHeading({ eyebrow, title, description, align = "center" }) {
+  return <div className={clsx("mb-9 max-w-2xl", align === "center" && "mx-auto text-center")}>
+    {eyebrow && <p className="mb-3 text-xs font-bold uppercase tracking-[.28em] text-[#9b6b35]">{eyebrow}</p>}
+    <h2 className="font-serif text-3xl leading-tight text-stone-900 sm:text-4xl">{title}</h2>
+    {description && <p className="mt-3 text-sm leading-6 text-stone-600">{description}</p>}
+  </div>;
 }
 
 export default SectionHeading;
