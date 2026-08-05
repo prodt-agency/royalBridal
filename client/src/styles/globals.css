@@ -4,6 +4,9 @@ html {
 
 body {
   overflow-x: hidden;
+  background: #fff;
+  color: #292524;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 img {
@@ -13,6 +16,10 @@ img {
 
 button {
   cursor: pointer;
+}
+
+summary::-webkit-details-marker {
+  display: none;
 }
 
 a {
