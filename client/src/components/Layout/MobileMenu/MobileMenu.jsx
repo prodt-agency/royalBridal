@@ -32,9 +32,9 @@ function MobileMenu({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={onClose}
+        aria-label="Close menu"
         className={`
           fixed inset-0 z-40 bg-black/40 transition-opacity duration-300
           ${
@@ -45,8 +45,8 @@ function MobileMenu({ isOpen, onClose }) {
         `}
       />
 
-      {/* Drawer */}
       <aside
+        aria-hidden={!isOpen}
         className={`
           fixed top-0 left-0 z-50
           h-screen w-80 max-w-[85vw]
@@ -59,7 +59,6 @@ function MobileMenu({ isOpen, onClose }) {
           }
         `}
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b p-5">
           <h2 className="text-xl font-bold text-rose-700">
             Royal Bridal
@@ -73,7 +72,6 @@ function MobileMenu({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex flex-col py-4">
           {NAV_LINKS.map((link) => (
             <NavLink
@@ -99,7 +97,6 @@ function MobileMenu({ isOpen, onClose }) {
           ))}
         </nav>
 
-        {/* Bottom */}
         <div className="absolute bottom-0 w-full border-t p-5">
           <a
             href={`https://wa.me/${SITE.WHATSAPP}`}

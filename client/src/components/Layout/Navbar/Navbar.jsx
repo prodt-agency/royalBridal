@@ -1,57 +1,20 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import Container from "../../common/Container/Container";
-
-import DesktopMenu from "./DesktopMenu";
-import NavIcons from "./NavIcons";
-import MobileToggle from "./MobileToggle";
-import MobileMenu from "../MobileMenu/MobileMenu";
-
-import Logo from "../../../assets/logo.webp";
+import { Link, useNavigate } from "react-router-dom";
+import Container from "@/components/common/Container/Container";
+import MobileMenu from "@/components/Layout/MobileMenu/MobileMenu";
+import DesktopMenu from "@/components/Layout/Navbar/DesktopMenu";
+import MobileToggle from "@/components/Layout/Navbar/MobileToggle";
+import NavIcons from "@/components/Layout/Navbar/NavIcons";
+import Logo from "@/assets/logo.webp";
+import useCartStore, { selectCartCount } from "@/store/cartStore";
+import useUIStore from "@/store/uiStore";
 
 function Navbar() {
   const navigate = useNavigate();
-
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
-      <Container>
-        <div className="flex h-20 items-center justify-between">
-          <MobileToggle
-            onClick={() => setMobileMenuOpen(true)}
-          />
-
-          <h1
-            onClick={() => navigate("/")}
-            className="
-              cursor-pointer
-              text-2xl
-              font-bold
-              tracking-wide
-              text-rose-700
-            "
-          >
-            <img src={Logo} alt="Royal Bridal" className="h-12 w-auto" />
-          </h1>
-
-          <DesktopMenu />
-
-          <NavIcons
-            cartCount={0}
-            onSearch={() => { }}
-            onCart={() => navigate("/cart")}
-          />
-        </div>
-      </Container>
-
-      <MobileMenu
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-      />
-    </header>
-  );
+  const cartCount = useCartStore(selectCartCount);
+  const { mobileMenuOpen, openMobileMenu, closeMobileMenu, openSearchDrawer } = useUIStore();
+  return <header className="sticky top-0 z-40 border-b border-stone-200 bg-white/95 backdrop-blur"><Container><div className="flex h-18 items-center justify-between gap-6 sm:h-20">
+    <MobileToggle onClick={openMobileMenu} /><Link className="shrink-0" to="/" aria-label="Royal Bridal home"><img src={Logo} alt="Royal Bridal" className="h-10 w-auto sm:h-12" /></Link><DesktopMenu /><NavIcons cartCount={cartCount} onSearch={openSearchDrawer} onCart={() => navigate("/cart")} />
+  </div></Container><MobileMenu isOpen={mobileMenuOpen} onClose={closeMobileMenu} /></header>;
 }
 
 export default Navbar;
