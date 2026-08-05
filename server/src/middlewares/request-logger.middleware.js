@@ -1,0 +1,2 @@
+import { logger, requestContext } from '../utils/logger.js';
+export const requestLogger = (req, res, next) => { const startedAt = process.hrtime.bigint(); requestContext.run({ requestId: req.requestId, method: req.method, route: req.originalUrl, ipAddress: req.ip }, () => { res.on('finish', () => logger.info('http_request', { statusCode: res.statusCode, responseTimeMs: Number(process.hrtime.bigint() - startedAt) / 1e6, adminId: req.admin?.sub ?? null })); next(); }); };
