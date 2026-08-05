@@ -1,0 +1,2 @@
+import { prisma } from '../lib/prisma.js';
+export const paymentRepository = { findForOrder: (orderId) => prisma.payment.findUnique({ where: { orderId }, include: { order: { include: { orderItems: true } } } }), update: (id, data) => prisma.payment.update({ where: { id }, data, include: { order: true } }), transaction: (callback) => prisma.$transaction(callback), webhook: (data) => prisma.webhookEvent.create({ data }), findWebhook: (eventId) => prisma.webhookEvent.findUnique({ where: { eventId } }) };
