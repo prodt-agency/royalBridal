@@ -1,0 +1,1 @@
+import { Router } from 'express'; import { dashboardController } from '../controllers/dashboard.controller.js'; import { requireAdmin } from '../middlewares/auth.middleware.js'; import { asyncHandler } from '../utils/async-handler.js'; const router = Router(); router.get('/', requireAdmin, asyncHandler(dashboardController.overview)); export default router;
