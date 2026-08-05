@@ -1,0 +1,2 @@
+export const ORDER_STATUS_FLOW = Object.freeze({ PENDING: ['CONFIRMED', 'CANCELLED'], CONFIRMED: ['PROCESSING', 'CANCELLED'], PROCESSING: ['PACKED', 'CANCELLED'], PACKED: ['SHIPPED', 'CANCELLED'], SHIPPED: ['DELIVERED', 'RETURNED'], DELIVERED: ['RETURNED', 'REFUNDED'], CANCELLED: [], RETURNED: ['REFUNDED'], REFUNDED: [] });
+export const STATUS_TIMESTAMP_FIELD = Object.freeze({ CONFIRMED: 'confirmedAt', PROCESSING: 'processingAt', PACKED: 'packedAt', SHIPPED: 'shippedAt', DELIVERED: 'deliveredAt', CANCELLED: 'cancelledAt', RETURNED: 'returnedAt', REFUNDED: 'refundedAt' });
