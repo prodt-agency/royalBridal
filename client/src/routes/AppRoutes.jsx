@@ -5,6 +5,10 @@ import Layout from "@/components/Layout/Layout";
 
 const Home = lazy(() => import("@/pages/Home"));
 const Products = lazy(() => import("@/pages/Products"));
+const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
+const Cart = lazy(() => import("@/pages/Cart"));
+const Checkout = lazy(() => import("@/pages/Checkout"));
+const OrderSuccess = lazy(() => import("@/pages/OrderSuccess"));
 
 function RouteLoader() {
   return (
@@ -28,8 +32,10 @@ function AppRoutes() {
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="products" element={<Products />} />
-          <Route path="products/:slug" element={<PlaceholderPage />} />
-          <Route path="cart" element={<PlaceholderPage />} />
+          <Route path="products/:slug" element={<ProductDetail />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="order-success" element={<OrderSuccess />} />
           <Route path="*" element={<PlaceholderPage />} />
         </Route>
       </Routes>
