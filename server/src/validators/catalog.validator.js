@@ -1,9 +1,97 @@
-import { z } from 'zod';
-const page = z.coerce.number().int().min(1).default(1); const limit = z.coerce.number().int().min(1).max(100).default(20);
-const category = z.object({ name: z.string().trim().min(2).max(100), image: z.string().url().optional().nullable(), parentId: z.number().int().positive().optional().nullable(), active: z.boolean().optional() });
-const product = z.object({ name: z.string().trim().min(2).max(180), sku: z.string().trim().min(2).max(64), description: z.string().trim().max(10000).optional().nullable(), price: z.coerce.number().positive(), salePrice: z.coerce.number().positive().optional().nullable(), categoryId: z.coerce.number().int().positive(), stock: z.coerce.number().int().min(0), featured: z.boolean().optional(), active: z.boolean().optional(), images: z.array(z.object({ imageUrl: z.string().url(), sortOrder: z.number().int().min(0).optional() })).max(10).optional(), sizes: z.array(z.object({ size: z.string().trim().min(1).max(40), stock: z.number().int().min(0).optional() })).max(20).optional() });
-export const categoryCreateSchema = z.object({ body: category, params: z.object({}), query: z.object({}) }); export const categoryUpdateSchema = z.object({ body: category.partial(), params: z.object({ id: z.coerce.number().int().positive() }), query: z.object({}) });
-export const productCreateSchema = z.object({ body: product.refine((data) => !data.salePrice || data.salePrice <= data.price, { message: 'Sale price cannot exceed price.', path: ['salePrice'] }), params: z.object({}), query: z.object({}) }); export const productUpdateSchema = z.object({ body: product.partial(), params: z.object({ id: z.coerce.number().int().positive() }), query: z.object({}) });
-export const productQuerySchema = z.object({ body: z.object({}), params: z.object({}), query: z.object({ page, limit, search: z.string().trim().max(100).optional(), category: z.string().trim().max(100).optional(), minPrice: z.coerce.number().min(0).optional(), maxPrice: z.coerce.number().min(0).optional(), size: z.string().trim().max(40).optional(), featured: z.coerce.boolean().optional(), active: z.coerce.boolean().optional(), sort: z.enum(['createdAt', 'price', 'name']).default('createdAt'), order: z.enum(['asc', 'desc']).default('desc') }) });
-export const categoryIdSchema = z.object({ body: z.object({}), params: z.object({ id: z.coerce.number().int().positive() }), query: z.object({}) });
-export const productSlugSchema = z.object({ body: z.object({}), params: z.object({ slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) }), query: z.object({}) });
+import { z } from "zod";
+const page = z.coerce.number().int().min(1).default(1);
+const limit = z.coerce.number().int().min(1).max(100).default(20);
+
+const category = z.object({
+  name: z.string().trim().min(2).max(100),
+  image: z.string().url().optional().nullable(),
+  parentId: z.number().int().positive().optional().nullable(),
+  active: z.boolean().optional(),
+});
+
+const product = z.object({
+  name: z.string().trim().min(2).max(180),
+  sku: z.string().trim().min(2).max(64),
+  description: z.string().trim().max(10000).optional().nullable(),
+  price: z.coerce.number().positive(),
+  salePrice: z.coerce.number().positive().optional().nullable(),
+  categoryId: z.coerce.number().int().positive(),
+  stock: z.coerce.number().int().min(0),
+  featured: z.boolean().optional(),
+  active: z.boolean().optional(),
+  images: z
+    .array(
+      z.object({
+        imageUrl: z.string().url(),
+        sortOrder: z.number().int().min(0).optional(),
+      }),
+    )
+    .max(10)
+    .optional(),
+  sizes: z
+    .array(
+      z.object({
+        size: z.string().trim().min(1).max(40),
+        stock: z.number().int().min(0).optional(),
+      }),
+    )
+    .max(20)
+    .optional(),
+});
+
+export const categoryCreateSchema = z.object({
+  body: category,
+  params: z.object({}),
+  query: z.object({}),
+});
+
+export const categoryUpdateSchema = z.object({
+  body: category.partial(),
+  params: z.object({ id: z.coerce.number().int().positive() }),
+  query: z.object({}),
+});
+
+export const productCreateSchema = z.object({
+  body: product.refine(
+    (data) => !data.salePrice || data.salePrice <= data.price,
+    { message: "Sale price cannot exceed price.", path: ["salePrice"] },
+  ),
+  params: z.object({}),
+  query: z.object({}),
+});
+
+export const productUpdateSchema = z.object({
+  body: product.partial(),
+  params: z.object({ id: z.coerce.number().int().positive() }),
+  query: z.object({}),
+});
+
+export const productQuerySchema = z.object({
+  body: z.object({}).optional(),
+  params: z.object({}),
+  query: z.object({
+    page,
+    limit,
+    search: z.string().trim().max(100).optional(),
+    category: z.string().trim().max(100).optional(),
+    minPrice: z.coerce.number().min(0).optional(),
+    maxPrice: z.coerce.number().min(0).optional(),
+    size: z.string().trim().max(40).optional(),
+    featured: z.coerce.boolean().optional(),
+    active: z.coerce.boolean().optional(),
+    sort: z.enum(["createdAt", "price", "name"]).default("createdAt"),
+    order: z.enum(["asc", "desc"]).default("desc"),
+  }),
+});
+
+export const categoryIdSchema = z.object({
+  body: z.object({}),
+  params: z.object({ id: z.coerce.number().int().positive() }),
+  query: z.object({}),
+});
+
+export const productSlugSchema = z.object({
+  body: z.object({}),
+  params: z.object({ slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/) }),
+  query: z.object({}),
+});
