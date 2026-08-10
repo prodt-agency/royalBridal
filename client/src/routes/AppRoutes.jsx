@@ -4,6 +4,7 @@ import Loader from "@/components/common/Loader/Loader";
 import Layout from "@/components/Layout/Layout";
 
 const Home = lazy(() => import("@/pages/Home"));
+const Products = lazy(() => import("@/pages/Products"));
 
 function RouteLoader() {
   return (
@@ -26,7 +27,7 @@ function AppRoutes() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="products" element={<PlaceholderPage />} />
+          <Route path="products" element={<Products />} />
           <Route path="products/:slug" element={<PlaceholderPage />} />
           <Route path="cart" element={<PlaceholderPage />} />
           <Route path="*" element={<PlaceholderPage />} />
