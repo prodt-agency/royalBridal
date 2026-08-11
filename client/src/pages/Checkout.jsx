@@ -8,6 +8,7 @@ import { orderService } from "@/services/order.service";
 import { paymentService } from "@/services/payment.service";
 import useCartStore, { selectCartTotal } from "@/store/cartStore";
 import { getErrorMessage } from "@/utils/apiError";
+import { loadRazorpay } from "@/lib/razorpay";
 const initial = {
   name: "",
   email: "",
@@ -51,11 +52,8 @@ function Checkout() {
         const payment = await paymentService.createOrder({
           orderId: checkout.order.id,
         });
-        if (!window.Razorpay)
-          throw new Error(
-            "Secure payment checkout is unavailable. Please try again shortly.",
-          );
-        new window.Razorpay({
+        const Razorpay = await loadRazorpay();
+        new Razorpay({
           key: payment.keyId,
           amount: Number(payment.amount) * 100,
           currency: payment.currency,

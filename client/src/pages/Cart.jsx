@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button/Button";
 import Container from "@/components/common/Container/Container";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import Seo from "@/components/Seo";
 import useCartStore, { selectCartTotal } from "@/store/cartStore";
 function Cart() {
+  const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
   const remove = useCartStore((state) => state.removeItem);
   const update = useCartStore((state) => state.updateQuantity);
@@ -16,9 +17,7 @@ function Cart() {
           title="Your bag is waiting"
           description="Add something beautiful to begin."
           actionText="Browse collection"
-          onAction={() => {
-            window.location.href = "/products";
-          }}
+          onAction={() => navigate("/products")}
         />
       </Container>
     );

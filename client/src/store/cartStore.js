@@ -14,7 +14,7 @@ const useCartStore = create(
             return {
               items: state.items.map((entry) =>
                 entry === existing
-                  ? { ...entry, quantity: entry.quantity + 1 }
+                  ? { ...entry, quantity: Math.min(entry.quantity + item.quantity, entry.stock ?? 10) }
                   : entry,
               ),
             };
