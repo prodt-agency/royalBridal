@@ -4,7 +4,7 @@ const limit = z.coerce.number().int().min(1).max(100).default(20);
 
 const category = z.object({
   name: z.string().trim().min(2).max(100),
-  image: z.string().url().optional().nullable(),
+  image: z.string().trim().min(1).optional().nullable(),
   parentId: z.number().int().positive().optional().nullable(),
   active: z.boolean().optional(),
 });
@@ -22,7 +22,7 @@ const product = z.object({
   images: z
     .array(
       z.object({
-        imageUrl: z.string().url(),
+        imageUrl: z.string().trim().min(1),
         sortOrder: z.number().int().min(0).optional(),
       }),
     )

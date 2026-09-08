@@ -11,6 +11,7 @@ import {
   orderUpdateSchema,
 } from "../validators/order.validator.js";
 const router = Router();
+router.get("/track/:orderNumber", asyncHandler(orderController.track));
 router.use(requireAdmin);
 router.get("/", validate(orderListSchema), asyncHandler(orderController.list));
 router.get("/:id", validate(orderIdSchema), asyncHandler(orderController.get));
