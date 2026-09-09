@@ -7,7 +7,9 @@ const schema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: z.coerce.number().int().positive().default(5000),
-  DATABASE_URL: z.string().url().startsWith("mysql"),
+  DATABASE_URL: z.string().url().refine((url) => url.startsWith("postgresql://") || url.startsWith("postgres://"), {
+    message: "DATABASE_URL must start with postgresql:// or postgres://",
+  }),
   CLIENT_URL: z.string().url(),
   JWT_ACCESS_SECRET: z.string().min(32),
   JWT_REFRESH_SECRET: z.string().min(32),
