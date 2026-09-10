@@ -6,17 +6,17 @@ export const productService = {
   getCategories: async () =>
     unwrap(await api.get("/categories")),
 
-  getFeatured: async () =>
+  getFeatured: async (params = {}) =>
     unwrap(
       await api.get("/products", {
-        params: { featured: true },
+        params: { featured: true, limit: 8, ...params },
       })
     ),
 
-  getLatest: async () =>
+  getLatest: async (params = {}) =>
     unwrap(
       await api.get("/products", {
-        params: { sort: "latest" },
+        params: { sort: "createdAt", order: "desc", limit: 8, ...params },
       })
     ),
 
