@@ -1,91 +1,181 @@
 import { Link, useNavigate } from "react-router-dom";
+import { Trash2, ArrowRight } from "lucide-react";
 import Button from "@/components/common/Button/Button";
 import Container from "@/components/common/Container/Container";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import Seo from "@/components/Seo";
 import useCartStore, { selectCartTotal } from "@/store/cartStore";
+import { getImageUrl } from "@/utils/image";
+
 function Cart() {
   const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
   const remove = useCartStore((state) => state.removeItem);
   const update = useCartStore((state) => state.updateQuantity);
+  const clearCart = useCartStore((state) => state.clearCart);
   const total = useCartStore(selectCartTotal);
-  if (!items.length)
+
+  if (!items.length) {
     return (
       <Container className="py-20">
         <EmptyState
-          title="Your bag is waiting"
-          description="Add something beautiful to begin."
-          actionText="Browse collection"
+          title="Your shopping bag is empty"
+          description="Explore our exquisite bridal collection to add your favourite pieces."
+          actionText="Browse Collection"
           onAction={() => navigate("/products")}
         />
       </Container>
     );
+  }
+
   return (
     <Container className="py-12">
       <Seo
         title="Your Bag | Royal Bridal"
-        description="Review your Royal Bridal bag."
+        description="Review your selected pieces in your Royal Bridal shopping bag."
       />
-      <h1 className="font-serif text-4xl">Your bag</h1>
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
-        <div className="divide-y">
-          {items.map((item) => (
-            <article
-              className="flex gap-4 py-5"
-              key={`${item.id}-${item.size}`}
-            >
-              <img
-                src={item.image}
-                alt=""
-                className="h-28 w-24 bg-stone-100 object-cover"
-              />
-              <div className="flex-1">
-                <h2 className="font-serif text-xl">{item.name}</h2>
-                <p className="text-sm text-stone-500">Size {item.size}</p>
-                <p className="mt-2">₹{item.price}</p>
-                <div className="mt-3 flex items-center gap-3">
-                  <button
-                    onClick={() =>
-                      update(item.id, item.size, item.quantity - 1)
-                    }
-                  >
-                    −
-                  </button>
-                  <span>{item.quantity}</span>
-                  <button
-                    onClick={() =>
-                      update(item.id, item.size, item.quantity + 1)
-                    }
-                  >
-                    +
-                  </button>
-                  <button
-                    onClick={() => remove(item.id, item.size)}
-                    className="ml-3 text-sm underline"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-        <aside className="h-fit bg-[#f5ede5] p-6">
-          <h2 className="font-serif text-2xl">Order summary</h2>
-          <div className="mt-5 flex justify-between">
-            <span>Subtotal</span>
-            <strong>₹{total}</strong>
-          </div>
-          <p className="mt-3 text-sm text-stone-500">
-            Shipping is calculated at checkout.
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 border-b border-stone-200 pb-6">
+        <div>
+          <h1 className="font-serif text-3xl sm:text-4xl text-stone-900">Your Shopping Bag</h1>
+          <p className="mt-1 text-sm text-stone-500">
+            {items.reduce((sum, i) => sum + i.quantity, 0)} {items.reduce((sum, i) => sum + i.quantity, 0) === 1 ? "item" : "items"}
           </p>
-          <Link to="/checkout">
-            <Button className="mt-6 w-full">Checkout</Button>
+        </div>
+        <button
+          type="button"
+          onClick={clearCart}
+          className="text-xs font-semibold uppercase tracking-wider text-stone-500 hover:text-red-700 transition"
+        >
+          Clear All
+        </button>
+      </div>
+
+      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
+        <div className="divide-y divide-stone-200">
+          {items.map((item) => {
+            const lineTotal = Number(item.price) * item.quantity;
+            return (
+              <article
+                className="flex gap-4 sm:gap-6 py-6"
+                key={`${item.id}-${item.size}`}
+              >
+                <Link
+                  to={item.slug ? `/products/${item.slug}` : `/products`}
+                  className="shrink-0 aspect-4/5 w-24 sm:w-28 overflow-hidden bg-stone-100"
+                >
+                  {item.image ? (
+                    <img
+                      src={getImageUrl(item.image)}
+                      alt={item.name}
+                      className="h-full w-full object-cover transition hover:scale-105"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-[#e7d5c6]" />
+                  )}
+                </Link>
+
+                <div className="flex flex-1 flex-col justify-between">
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <Link
+                        to={item.slug ? `/products/${item.slug}` : `/products`}
+                        className="font-serif text-lg sm:text-xl text-stone-900 hover:text-[#7d2034] transition"
+                      >
+                        {item.name}
+                      </Link>
+                      <span className="font-semibold text-stone-900 sm:text-lg">
+                        ₹{lineTotal}
+                      </span>
+                    </div>
+
+                    <div className="mt-1.5 flex items-center gap-3 text-sm text-stone-500">
+                      {item.size && (
+                        <span className="rounded bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-700">
+                          Size: {item.size}
+                        </span>
+                      )}
+                      <span>₹{item.price} each</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center rounded-full border border-stone-300">
+                      <button
+                        type="button"
+                        onClick={() => update(item.id, item.size, item.quantity - 1)}
+                        className="px-3 py-1.5 text-stone-600 hover:text-black"
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-7 text-center text-sm font-medium">
+                        {item.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => update(item.id, item.size, item.quantity + 1)}
+                        className="px-3 py-1.5 text-stone-600 hover:text-black"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => remove(item.id, item.size)}
+                      className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-red-700 transition"
+                      aria-label={`Remove ${item.name}`}
+                    >
+                      <Trash2 size={15} />
+                      <span className="hidden sm:inline">Remove</span>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <aside className="h-fit rounded-lg bg-[#f9f5f0] p-6 sm:p-8">
+          <h2 className="font-serif text-2xl text-stone-900">Order Summary</h2>
+
+          <div className="mt-6 space-y-3 text-sm text-stone-600">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <strong className="text-base text-stone-900">₹{total}</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Estimated Shipping</span>
+              <span className="text-stone-500">Calculated at checkout</span>
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-stone-300 pt-4 flex justify-between items-baseline">
+            <span className="font-semibold text-stone-900">Estimated Total</span>
+            <span className="font-serif text-2xl font-bold text-[#7d2034]">₹{total}</span>
+          </div>
+
+          <p className="mt-2 text-xs text-stone-500">
+            Taxes included. Standard shipping free across India.
+          </p>
+
+          <Link to="/checkout" className="mt-6 block">
+            <Button className="w-full py-3.5 text-base flex items-center justify-center gap-2">
+              Proceed to Checkout <ArrowRight size={16} />
+            </Button>
+          </Link>
+
+          <Link
+            to="/products"
+            className="mt-4 block text-center text-xs font-medium text-stone-600 hover:text-[#7d2034] underline"
+          >
+            Continue Shopping
           </Link>
         </aside>
       </div>
     </Container>
   );
 }
+
 export default Cart;

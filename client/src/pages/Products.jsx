@@ -36,8 +36,8 @@ function Products() {
     const requestParams = {
       page: query.page,
       limit: query.limit,
-      search: query.search,
-      category: query.category,
+      search: query.search || undefined,
+      category: query.category || undefined,
       sort: query.sort,
       order: query.order,
     };
@@ -50,8 +50,15 @@ function Products() {
           setError("");
         }
       })
-      .catch((requestError) => live && setError(getErrorMessage(requestError)))
-      .finally(() => live && setLoading(false));
+      .catch((requestError) => {
+        if (live) {
+          setError(getErrorMessage(requestError));
+          setProducts([]);
+        }
+      })
+      .finally(() => {
+        if (live) setLoading(false);
+      });
     return () => {
       live = false;
     };

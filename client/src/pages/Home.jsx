@@ -14,6 +14,8 @@ import ProductGrid from "@/components/home/ProductGrid";
 import Seo from "@/components/Seo";
 import { productService } from "@/services/product.service";
 
+import { getImageUrl } from "@/utils/image";
+
 const values = [
   [
     Gem,
@@ -37,7 +39,9 @@ const faqs = [
   "Do you ship across India?",
 ];
 const getItems = (data) =>
-  Array.isArray(data) ? data : (data?.products ?? data?.categories ?? []);
+  Array.isArray(data)
+    ? data
+    : (data?.data ?? data?.products ?? data?.categories ?? []);
 
 function Home() {
   const [categories, setCategories] = useState([]);
@@ -119,8 +123,8 @@ function Home() {
                 />
                 {category.image && (
                   <img
-                    src={category.image}
-                    alt=""
+                    src={getImageUrl(category.image)}
+                    alt={category.name}
                     loading="lazy"
                     className="absolute inset-0 h-full w-full object-cover mix-blend-multiply"
                   />
