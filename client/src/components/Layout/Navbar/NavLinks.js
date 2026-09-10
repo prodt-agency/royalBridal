@@ -16,15 +16,11 @@ export const NAV_LINKS = [
     path: "/products?category=kaleere",
   },
   {
-    name: "Accessories",
-    path: "/products?category=accessories",
+    name: "Bangles",
+    path: "/products?category=bangles",
   },
   {
-    name: "About",
-    path: "/about",
-  },
-  {
-    name: "Contact",
-    path: "/contact",
+    name: "Track Order",
+    path: "/track-order",
   },
 ];
