@@ -10,7 +10,9 @@ const schema = z.object({
   DATABASE_URL: z.string().url().refine((url) => url.startsWith("postgresql://") || url.startsWith("postgres://"), {
     message: "DATABASE_URL must start with postgresql:// or postgres://",
   }),
-  CLIENT_URL: z.string().url(),
+  // Browser Origin values never include a trailing slash. Normalize the configured
+  // URL so a harmless trailing slash in an environment value cannot break CORS.
+  CLIENT_URL: z.string().url().transform((url) => new URL(url).origin),
   JWT_ACCESS_SECRET: z.string().min(32),
   JWT_REFRESH_SECRET: z.string().min(32),
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),

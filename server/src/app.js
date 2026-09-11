@@ -23,6 +23,22 @@ import uploadRouter from "./routes/upload.routes.js";
 
 export const app = express();
 
+const allowedOrigins = new Set([
+  env.clientUrl,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+]);
+
+const corsOptions = {
+  // Reflect only a known requesting origin. The cors package also sets
+  // `Vary: Origin` when resolving this callback for a CORS request.
+  origin(origin, callback) {
+    callback(null, origin && allowedOrigins.has(origin) ? origin : false);
+  },
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
 app.set("trust proxy", 1);
 app.use(
   helmet({
@@ -35,13 +51,7 @@ app.use("/uploads", express.static(env.uploadDirectory));
 app.use("/images", express.static(path.resolve("public/images")));
 app.use(express.static(path.resolve("public")));
 app.post("/api/payments/webhook", express.raw({ type: "application/json" }));
-app.use(
-  cors({
-    origin: [env.clientUrl, "http://127.0.0.1:5173"],
-    credentials: true,
-    optionsSuccessStatus: 204,
-  }),
-);
+app.use(cors(corsOptions));
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));

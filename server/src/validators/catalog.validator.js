@@ -79,7 +79,12 @@ export const productQuerySchema = z.object({
     size: z.string().trim().max(40).optional(),
     featured: z.coerce.boolean().optional(),
     active: z.coerce.boolean().optional(),
-    sort: z.enum(["createdAt", "price", "name"]).default("createdAt"),
+    // `latest` was used by an earlier client; normalize it to the canonical
+    // creation-date sort before it reaches Prisma.
+    sort: z
+      .enum(["createdAt", "price", "name", "latest"])
+      .transform((sort) => (sort === "latest" ? "createdAt" : sort))
+      .default("createdAt"),
     order: z.enum(["asc", "desc"]).default("desc"),
   }),
 });
