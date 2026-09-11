@@ -19,7 +19,6 @@ const schema = z.object({
   UPLOAD_DIRECTORY: z.string().default("./public/uploads"),
   RAZORPAY_KEY_ID: z.string().min(1).optional(),
   RAZORPAY_KEY_SECRET: z.string().min(1).optional(),
-  RAZORPAY_WEBHOOK_SECRET: z.string().min(1).optional(),
 });
 const result = schema.safeParse(process.env);
 if (!result.success)
@@ -40,6 +39,5 @@ export const env = Object.freeze({
   uploadDirectory: path.resolve(value.UPLOAD_DIRECTORY),
   razorpayKeyId: value.RAZORPAY_KEY_ID,
   razorpayKeySecret: value.RAZORPAY_KEY_SECRET,
-  razorpayWebhookSecret: value.RAZORPAY_WEBHOOK_SECRET,
 });
 export const validateEnv = () => env;

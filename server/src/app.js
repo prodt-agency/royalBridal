@@ -37,7 +37,7 @@ app.use(express.static(path.resolve("public")));
 app.post("/api/payments/webhook", express.raw({ type: "application/json" }));
 app.use(
   cors({
-    origin: env.clientUrl,
+    origin: [env.clientUrl, "http://127.0.0.1:5173"],
     credentials: true,
     optionsSuccessStatus: 204,
   }),
