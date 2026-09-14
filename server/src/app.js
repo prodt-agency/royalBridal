@@ -23,6 +23,9 @@ import uploadRouter from "./routes/upload.routes.js";
 
 export const app = express();
 
+console.log("ROYAL BRIDAL BACKEND VERSION: CORS-FIX-2026-09-14");
+console.log("CLIENT URL:", env.clientUrl);
+
 const allowedOrigins = new Set([
   env.clientUrl,
   "http://localhost:5173",
@@ -64,6 +67,15 @@ app.use("/images", express.static(path.resolve("public/images")));
 app.use(express.static(path.resolve("public")));
 app.post("/api/payments/webhook", express.raw({ type: "application/json" }));
 app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
