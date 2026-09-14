@@ -67,17 +67,31 @@ app.use("/images", express.static(path.resolve("public/images")));
 app.use(express.static(path.resolve("public")));
 app.post("/api/payments/webhook", express.raw({ type: "application/json" }));
 
+// Handle CORS preflight requests explicitly
 app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    console.log("========== CORS PREFLIGHT ==========");
-    console.log("Origin:", req.headers.origin);
-    console.log("Requested Method:", req.headers["access-control-request-method"]);
-    console.log("Requested Headers:", req.headers["access-control-request-headers"]);
-    console.log("Path:", req.originalUrl);
-    console.log("=====================================");
+  if (req.method !== "OPTIONS") {
+    return next();
   }
 
-  next();
+  const origin = req.headers.origin;
+
+  if (!origin || !allowedOrigins.has(origin)) {
+    return res.status(403).send("CORS origin not allowed");
+  }
+
+  res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS",
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+  );
+
+  return res.sendStatus(204);
 });
 
 app.use(cors(corsOptions));
