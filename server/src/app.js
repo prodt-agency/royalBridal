@@ -66,15 +66,29 @@ app.use("/uploads", express.static(env.uploadDirectory));
 app.use("/images", express.static(path.resolve("public/images")));
 app.use(express.static(path.resolve("public")));
 app.post("/api/payments/webhook", express.raw({ type: "application/json" }));
-app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
+    console.log("========== CORS PREFLIGHT ==========");
+    console.log("Origin:", req.headers.origin);
+    console.log("Requested Method:", req.headers["access-control-request-method"]);
+    console.log("Requested Headers:", req.headers["access-control-request-headers"]);
+    console.log("Path:", req.originalUrl);
+    console.log("=====================================");
   }
 
   next();
 });
+
+app.use(cors(corsOptions));
+
+// app.use((req, res, next) => {
+//   if (req.method === "OPTIONS") {
+//     return res.sendStatus(204);
+//   }
+
+//   next();
+// });
 
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));
