@@ -86,12 +86,19 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS",
   );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization",
-  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  return res.sendStatus(204);
+  console.log("========== CORS RESPONSE ==========");
+  console.log("Allow-Origin:", res.getHeader("Access-Control-Allow-Origin"));
+  console.log("Allow-Methods:", res.getHeader("Access-Control-Allow-Methods"));
+  console.log("Allow-Headers:", res.getHeader("Access-Control-Allow-Headers"));
+  console.log(
+    "Allow-Credentials:",
+    res.getHeader("Access-Control-Allow-Credentials"),
+  );
+  console.log("===================================");
+
+  return res.status(204).end();
 });
 
 app.use(cors(corsOptions));
