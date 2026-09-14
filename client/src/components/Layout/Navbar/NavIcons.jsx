@@ -6,39 +6,40 @@ function NavIcons({
   onCart,
 }) {
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-1 sm:gap-2">
       <button
         onClick={onSearch}
         aria-label="Search"
+        className="grid h-11 w-11 place-items-center text-[#24181a] transition hover:text-[#7d2034]"
       >
         <Search
           size={22}
-          className="hover:text-rose-700 transition"
+          className="transition"
         />
       </button>
 
       <button
         onClick={onCart}
         aria-label="Shopping Cart"
-        className="relative"
+        className="relative grid h-11 w-11 place-items-center text-[#24181a] transition hover:text-[#7d2034]"
       >
         <ShoppingBag
           size={22}
-          className="hover:text-rose-700 transition"
+          className="transition"
         />
 
         {cartCount > 0 && (
           <span
             className="
               absolute
-              -top-2
-              -right-2
-              h-5
-              w-5
+              top-0
+              right-0
+              h-4
+              w-4
               rounded-full
-              bg-rose-700
+              bg-[#7d2034]
               text-white
-              text-xs
+              text-[10px]
               flex
               items-center
               justify-center

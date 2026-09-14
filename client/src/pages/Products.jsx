@@ -79,30 +79,30 @@ function Products() {
     setParams(next);
   };
   return (
-    <section className="py-14">
+    <section className="py-14 sm:py-18 lg:py-20">
       <Seo
         title="Shop Bridal Jewellery | Royal Bridal"
         description="Explore Royal Bridal's curated jewellery collection."
       />
       <Container>
-        <SectionHeading
+        <div className="border-b border-[#ded5cd] pb-8 sm:pb-10"><SectionHeading
           eyebrow="Royal Bridal"
           title="The collection"
           description="Discover pieces chosen for the moments you will remember forever."
-        />
-        <div className="mb-9 grid gap-3 md:grid-cols-3">
+        /></div>
+        <div className="mb-10 grid gap-3 border-b border-[#ded5cd] py-6 md:grid-cols-3">
           <input
             aria-label="Search products"
             value={params.get("search") ?? ""}
             onChange={(event) => change({ search: event.target.value })}
             placeholder="Search the collection"
-            className="rounded-full border border-stone-300 px-5 py-3 outline-none focus:border-[#7d2034]"
+            className="min-h-12 w-full border border-stone-300 px-4 text-sm outline-none transition focus:border-[#7d2034]"
           />
           <select
             aria-label="Filter category"
             value={params.get("category") ?? ""}
             onChange={(event) => change({ category: event.target.value })}
-            className="rounded-full border border-stone-300 px-5 py-3"
+            className="min-h-12 w-full border border-stone-300 bg-white px-4 text-sm"
           >
             <option value="">All categories</option>
             {categories.map((category) => (
@@ -118,7 +118,7 @@ function Products() {
               const [sort, order] = event.target.value.split(":");
               change({ sort, order });
             }}
-            className="rounded-full border border-stone-300 px-5 py-3"
+            className="min-h-12 w-full border border-stone-300 bg-white px-4 text-sm"
           >
             <option value="createdAt:desc">Newest first</option>
             <option value="price:asc">Price: low to high</option>
@@ -144,17 +144,17 @@ function Products() {
             <button
               disabled={!meta.hasPreviousPage}
               onClick={() => change({ page: String(query.page - 1) })}
-              className="rounded-full border px-5 py-2 disabled:opacity-40"
+              className="min-h-11 border border-[#b9aaa0] px-5 text-[11px] font-semibold uppercase tracking-[.14em] text-[#7d2034] transition hover:bg-[#f5ede5] disabled:opacity-40"
             >
               Previous
             </button>
-            <span className="text-sm">
+            <span className="text-sm text-stone-600">
               Page {meta.page} of {meta.totalPages}
             </span>
             <button
               disabled={!meta.hasNextPage}
               onClick={() => change({ page: String(query.page + 1) })}
-              className="rounded-full border px-5 py-2 disabled:opacity-40"
+              className="min-h-11 border border-[#b9aaa0] px-5 text-[11px] font-semibold uppercase tracking-[.14em] text-[#7d2034] transition hover:bg-[#f5ede5] disabled:opacity-40"
             >
               Next
             </button>

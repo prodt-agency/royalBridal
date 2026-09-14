@@ -5,7 +5,7 @@ function MobileToggle({ onClick }) {
     <button
       onClick={onClick}
       aria-label="Open Menu"
-      className="lg:hidden"
+      className="grid h-11 w-11 place-items-center text-[#24181a] lg:hidden"
     >
       <Menu size={28} />
     </button>
