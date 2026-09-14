@@ -30,12 +30,12 @@ const allowedOrigins = new Set([
 ]);
 
 const corsOptions = {
-  // Reflect only a known requesting origin. The cors package also sets
-  // `Vary: Origin` when resolving this callback for a CORS request.
   origin(origin, callback) {
     callback(null, origin && allowedOrigins.has(origin) ? origin : false);
   },
   credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 204,
 };
 
