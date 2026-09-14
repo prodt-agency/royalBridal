@@ -31,11 +31,23 @@ const allowedOrigins = new Set([
 
 const corsOptions = {
   origin(origin, callback) {
-    callback(null, origin && allowedOrigins.has(origin) ? origin : false);
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.has(origin)) {
+      return callback(null, origin);
+    }
+
+    return callback(new Error(`CORS blocked origin: ${origin}`));
   },
+
   credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+
+  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+
   allowedHeaders: ["Content-Type", "Authorization"],
+
   optionsSuccessStatus: 204,
 };
 
