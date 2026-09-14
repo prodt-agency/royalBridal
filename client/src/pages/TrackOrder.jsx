@@ -84,7 +84,7 @@ function TrackOrder() {
       : 0;
 
   return (
-    <Container className="py-14 max-w-3xl">
+    <Container className="max-w-3xl py-14 sm:py-20">
       <Seo
         title="Track Your Order | Royal Bridal"
         description="Track the status of your Royal Bridal order."
@@ -94,7 +94,7 @@ function TrackOrder() {
         <p className="text-xs font-bold uppercase tracking-[.25em] text-[#9b6b35]">
           Real-time status
         </p>
-        <h1 className="mt-2 font-serif text-3xl sm:text-4xl text-stone-900">
+        <h1 className="mt-3 font-serif text-4xl tracking-[-.025em] text-stone-900 sm:text-5xl">
           Track Your Order
         </h1>
         <p className="mt-3 text-sm text-stone-600">
@@ -105,7 +105,7 @@ function TrackOrder() {
 
       <form
         onSubmit={handleSubmit}
-        className="mt-8 flex gap-3 max-w-lg mx-auto"
+        className="mx-auto mt-8 flex max-w-lg gap-3"
       >
         <div className="relative flex-1">
           <Search
@@ -117,10 +117,10 @@ function TrackOrder() {
             value={orderQuery}
             onChange={(e) => setOrderQuery(e.target.value)}
             placeholder="Enter Order Number"
-            className="w-full rounded-full border border-stone-300 pl-11 pr-4 py-3 text-sm outline-none focus:border-[#7d2034]"
+            className="min-h-12 w-full border border-stone-300 bg-white pl-11 pr-4 text-sm outline-none focus:border-[#7d2034]"
           />
         </div>
-        <Button type="submit" loading={loading} className="rounded-full px-6">
+        <Button type="submit" loading={loading} className="px-6">
           Track
         </Button>
       </form>
@@ -145,7 +145,7 @@ function TrackOrder() {
       {!loading && order && (
         <div className="mt-12 space-y-8">
           {/* Order Header Card */}
-          <div className="rounded-lg border border-stone-200 bg-white p-6 sm:p-8 shadow-sm">
+          <div className="border-y border-[#ded5cd] bg-white p-6 sm:p-8">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-5">
               <div>
                 <p className="text-xs text-stone-500 font-medium">

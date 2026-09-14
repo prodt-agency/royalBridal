@@ -112,19 +112,19 @@ function ProductDetail() {
         title={`${product.name} | Royal Bridal`}
         description={product.description ?? product.name}
       />
-      <Container className="py-12">
+      <Container className="py-10 sm:py-14 lg:py-16">
         <Link
           to="/products"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-stone-500 hover:text-[#7d2034]"
+          className="mb-7 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[.14em] text-stone-500 hover:text-[#7d2034]"
         >
           <ArrowLeft size={16} /> Back to collection
         </Link>
 
-        <div className="grid gap-10 lg:grid-cols-2">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,.92fr)] lg:gap-16">
           <div>
             <div className="relative aspect-4/5 overflow-hidden bg-[#ead9cb]">
               {isOnSale && (
-                <span className="absolute top-4 left-4 z-10 rounded bg-[#7d2034] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                <span className="absolute top-4 left-4 z-10 bg-[#7d2034] px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white">
                   Sale
                 </span>
               )}
@@ -139,12 +139,13 @@ function ProductDetail() {
               )}
             </div>
             {images.length > 1 && (
-              <div className="mt-3 flex flex-wrap gap-3">
+              <div className="mt-4 flex flex-wrap gap-3">
                 {images.map((image, index) => (
                   <button
                     key={image.id ?? image.imageUrl}
                     onClick={() => setSelectedImage(index)}
-                    className={`h-20 w-16 overflow-hidden border-2 transition ${
+                    aria-label={`View image ${index + 1} of ${product.name}`}
+                    className={`h-20 w-16 overflow-hidden border transition ${
                       index === selectedImage
                         ? "border-[#7d2034]"
                         : "border-transparent opacity-70 hover:opacity-100"
@@ -170,12 +171,12 @@ function ProductDetail() {
                 {product.category.name}
               </Link>
             )}
-            <h1 className="mt-2 font-serif text-3xl sm:text-4xl text-stone-900">
+            <h1 className="mt-3 font-serif text-4xl leading-[1.05] tracking-[-.025em] text-[#24181a] sm:text-5xl">
               {product.name}
             </h1>
-            <p className="mt-1 text-xs text-stone-400">SKU: {product.sku}</p>
+            <p className="mt-3 text-[11px] uppercase tracking-[.13em] text-stone-400">SKU: {product.sku}</p>
 
-            <div className="mt-4 flex items-baseline gap-3">
+            <div className="mt-6 flex items-baseline gap-3 border-y border-[#e4dbd3] py-5">
               <p className="text-2xl sm:text-3xl font-semibold text-stone-900">
                 ₹{price}
               </p>
@@ -187,13 +188,13 @@ function ProductDetail() {
             </div>
 
             {product.description && (
-              <p className="mt-6 leading-7 text-stone-600">
+              <p className="mt-7 max-w-xl whitespace-pre-line text-[15px] leading-8 text-stone-600">
                 {product.description}
               </p>
             )}
 
             {hasSizes && (
-              <fieldset className="mt-7">
+              <fieldset className="mt-8 border-t border-[#e4dbd3] pt-7">
                 <div className="flex items-center justify-between">
                   <legend className="text-sm font-semibold text-stone-900">
                     Select Size
@@ -216,7 +217,7 @@ function ProductDetail() {
                         key={entry.size}
                         disabled={out}
                         onClick={() => setSize(entry.size)}
-                        className={`rounded-full border px-5 py-2 text-sm font-medium transition ${
+                        className={`min-h-11 border px-5 py-2 text-sm font-medium transition ${
                           isSelected
                             ? "border-[#7d2034] bg-[#7d2034] text-white"
                             : out
@@ -233,17 +234,17 @@ function ProductDetail() {
             )}
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <div className="flex w-fit items-center rounded-full border border-stone-300">
+              <div className="flex h-12 w-fit items-center border border-stone-300">
                 <button
                   type="button"
                   disabled={isOutOfStock}
                   onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-                  className="px-4 py-3 text-lg font-medium text-stone-700 hover:text-black disabled:opacity-30"
+                  className="grid h-full w-12 place-items-center text-lg font-medium text-stone-700 hover:text-black disabled:opacity-30"
                   aria-label="Decrease quantity"
                 >
                   −
                 </button>
-                <span className="min-w-8 text-center font-medium">{quantity}</span>
+                <span className="min-w-10 text-center font-medium">{quantity}</span>
                 <button
                   type="button"
                   disabled={isOutOfStock}
@@ -252,7 +253,7 @@ function ProductDetail() {
                       Math.min(Math.min(availableStock, 10), value + 1)
                     )
                   }
-                  className="px-4 py-3 text-lg font-medium text-stone-700 hover:text-black disabled:opacity-30"
+                  className="grid h-full w-12 place-items-center text-lg font-medium text-stone-700 hover:text-black disabled:opacity-30"
                   aria-label="Increase quantity"
                 >
                   +
@@ -260,7 +261,7 @@ function ProductDetail() {
               </div>
 
               <Button
-                className="flex-1 py-3 text-base"
+                className="flex-1 py-3 text-sm"
                 disabled={isOutOfStock || (hasSizes && !size)}
                 onClick={handleAddToCart}
               >
@@ -281,8 +282,9 @@ function ProductDetail() {
         </div>
 
         {related.length > 0 && (
-          <section className="mt-20 border-t border-stone-200 pt-16">
-            <h2 className="mb-8 font-serif text-3xl text-stone-900">
+          <section className="mt-20 border-t border-[#ded5cd] pt-14 sm:pt-16">
+            <p className="text-[10px] font-bold uppercase tracking-[.22em] text-[#9b6b35]">Complete the edit</p>
+            <h2 className="mb-9 mt-2 font-serif text-3xl tracking-[-.02em] text-stone-900">
               You may also love
             </h2>
             <ProductGrid products={related} />

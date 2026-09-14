@@ -32,20 +32,20 @@ function OrderSuccess() {
   }, [orderNumber]);
 
   return (
-    <Container className="py-16 max-w-3xl">
+    <Container className="max-w-3xl py-14 sm:py-20">
       <Seo
         title="Order Confirmed | Royal Bridal"
         description="Your Royal Bridal order is confirmed."
       />
 
       <div className="text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#e6c98c] bg-[#f5ede5] text-[#7d2034]">
           <CheckCircle2 size={36} />
         </div>
         <p className="mt-4 text-xs font-bold uppercase tracking-[.25em] text-[#9b6b35]">
           Thank you for choosing Royal Bridal
         </p>
-        <h1 className="mt-2 font-serif text-3xl sm:text-4xl text-stone-900">
+        <h1 className="mt-3 font-serif text-4xl tracking-[-.025em] text-stone-900 sm:text-5xl">
           Your order is confirmed!
         </h1>
         {orderNumber && (
@@ -60,7 +60,7 @@ function OrderSuccess() {
           <Loader />
         </div>
       ) : order ? (
-        <div className="mt-10 rounded-lg border border-stone-200 bg-white p-6 sm:p-8 shadow-sm">
+        <div className="mt-10 border-y border-[#ded5cd] bg-white p-6 sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-6">
             <div>
               <p className="text-xs font-medium text-stone-500">Order Date</p>
@@ -80,7 +80,7 @@ function OrderSuccess() {
             </div>
             <div>
               <p className="text-xs font-medium text-stone-500">Order Status</p>
-              <span className="rounded bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800">
+              <span className="bg-[#f5ede5] px-2.5 py-1 text-xs font-bold text-[#7d2034]">
                 {order.orderStatus}
               </span>
             </div>
@@ -117,7 +117,7 @@ function OrderSuccess() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-md bg-[#f9f5f0] p-4 text-xs text-stone-700">
+          <div className="mt-6 border-l-2 border-[#e6c98c] bg-[#f5ede5] p-4 text-xs text-stone-700">
             <p className="font-semibold text-stone-900">Delivery Address</p>
             <p className="mt-1">
               {order.customerName} • {order.phone}

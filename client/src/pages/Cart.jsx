@@ -29,14 +29,14 @@ function Cart() {
   }
 
   return (
-    <Container className="py-12">
+    <Container className="py-10 sm:py-14 lg:py-16">
       <Seo
         title="Your Bag | Royal Bridal"
         description="Review your selected pieces in your Royal Bridal shopping bag."
       />
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 border-b border-stone-200 pb-6">
+      <div className="flex flex-col justify-between gap-4 border-b border-[#ded5cd] pb-7 sm:flex-row sm:items-baseline">
         <div>
-          <h1 className="font-serif text-3xl sm:text-4xl text-stone-900">Your Shopping Bag</h1>
+          <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[#9b6b35]">Royal Bridal</p><h1 className="mt-2 font-serif text-4xl tracking-[-.025em] text-stone-900 sm:text-5xl">Your Shopping Bag</h1>
           <p className="mt-1 text-sm text-stone-500">
             {items.reduce((sum, i) => sum + i.quantity, 0)} {items.reduce((sum, i) => sum + i.quantity, 0) === 1 ? "item" : "items"}
           </p>
@@ -44,24 +44,24 @@ function Cart() {
         <button
           type="button"
           onClick={clearCart}
-          className="text-xs font-semibold uppercase tracking-wider text-stone-500 hover:text-red-700 transition"
+          className="text-[11px] font-semibold uppercase tracking-[.14em] text-stone-500 hover:text-[#7d2034] transition"
         >
           Clear All
         </button>
       </div>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
-        <div className="divide-y divide-stone-200">
+        <div className="divide-y divide-[#ded5cd]">
           {items.map((item) => {
             const lineTotal = Number(item.price) * item.quantity;
             return (
               <article
-                className="flex gap-4 sm:gap-6 py-6"
+                className="flex gap-4 py-6 sm:gap-6 sm:py-7"
                 key={`${item.id}-${item.size}`}
               >
                 <Link
                   to={item.slug ? `/products/${item.slug}` : `/products`}
-                  className="shrink-0 aspect-4/5 w-24 sm:w-28 overflow-hidden bg-stone-100"
+                  className="shrink-0 aspect-[4/5] w-24 overflow-hidden bg-[#eee4da] sm:w-28"
                 >
                   {item.image ? (
                     <img
@@ -90,7 +90,7 @@ function Cart() {
 
                     <div className="mt-1.5 flex items-center gap-3 text-sm text-stone-500">
                       {item.size && (
-                        <span className="rounded bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-700">
+                        <span className="bg-[#f5ede5] px-2 py-0.5 text-xs font-medium text-stone-700">
                           Size: {item.size}
                         </span>
                       )}
@@ -99,11 +99,11 @@ function Cart() {
                   </div>
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center rounded-full border border-stone-300">
+                    <div className="flex min-h-10 items-center border border-stone-300">
                       <button
                         type="button"
                         onClick={() => update(item.id, item.size, item.quantity - 1)}
-                        className="px-3 py-1.5 text-stone-600 hover:text-black"
+                        className="grid h-10 w-10 place-items-center text-stone-600 hover:text-black"
                         aria-label="Decrease quantity"
                       >
                         −
@@ -114,7 +114,7 @@ function Cart() {
                       <button
                         type="button"
                         onClick={() => update(item.id, item.size, item.quantity + 1)}
-                        className="px-3 py-1.5 text-stone-600 hover:text-black"
+                        className="grid h-10 w-10 place-items-center text-stone-600 hover:text-black"
                         aria-label="Increase quantity"
                       >
                         +
@@ -124,7 +124,7 @@ function Cart() {
                     <button
                       type="button"
                       onClick={() => remove(item.id, item.size)}
-                      className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-red-700 transition"
+                      className="inline-flex min-h-10 items-center gap-1 text-xs text-stone-500 hover:text-[#7d2034] transition"
                       aria-label={`Remove ${item.name}`}
                     >
                       <Trash2 size={15} />
@@ -137,7 +137,7 @@ function Cart() {
           })}
         </div>
 
-        <aside className="h-fit rounded-lg bg-[#f9f5f0] p-6 sm:p-8">
+        <aside className="h-fit border-y border-[#ded5cd] bg-[#f5ede5] p-6 sm:p-8 lg:sticky lg:top-24">
           <h2 className="font-serif text-2xl text-stone-900">Order Summary</h2>
 
           <div className="mt-6 space-y-3 text-sm text-stone-600">
@@ -156,9 +156,7 @@ function Cart() {
             <span className="font-serif text-2xl font-bold text-[#7d2034]">₹{total}</span>
           </div>
 
-          <p className="mt-2 text-xs text-stone-500">
-            Taxes included. Standard shipping free across India.
-          </p>
+          <p className="mt-2 text-xs text-stone-500">Shipping is calculated at checkout.</p>
 
           <Link to="/checkout" className="mt-6 block">
             <Button className="w-full py-3.5 text-base flex items-center justify-center gap-2">
@@ -168,7 +166,7 @@ function Cart() {
 
           <Link
             to="/products"
-            className="mt-4 block text-center text-xs font-medium text-stone-600 hover:text-[#7d2034] underline"
+            className="mt-4 block text-center text-xs font-medium text-stone-600 hover:text-[#7d2034] underline underline-offset-4"
           >
             Continue Shopping
           </Link>

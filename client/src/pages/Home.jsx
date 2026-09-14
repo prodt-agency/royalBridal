@@ -134,7 +134,7 @@ function Home() {
             <p className="text-[11px] font-bold uppercase tracking-[.3em] text-[#9b6b35]">Begin your edit</p>
             <h2 className="mt-4 font-serif text-4xl leading-tight tracking-[-.025em] text-[#24181a] sm:text-5xl">Find the finishing touch for your celebration.</h2>
             <p className="mx-auto mt-5 max-w-lg text-sm leading-7 text-stone-600 sm:text-base">Browse the collection and discover bridal jewellery that feels distinctly yours.</p>
-            <Link to="/products" className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-[#7d2034] px-6 py-3.5 text-sm font-semibold uppercase tracking-[.14em] text-white transition hover:bg-[#5f1727]">Shop the collection <ArrowRight size={16} /></Link>
+            <Link to="/products" className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-sm bg-[#7d2034] px-6 py-3.5 text-xs font-semibold uppercase tracking-[.14em] text-white transition hover:bg-[#5f1727]">Shop the collection <ArrowRight size={16} /></Link>
           </div>
         </Container>
       </section>

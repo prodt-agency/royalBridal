@@ -147,25 +147,25 @@ function Checkout() {
   }
 
   return (
-    <Container className="py-12">
+    <Container className="py-10 sm:py-14 lg:py-16">
       <Seo
         title="Checkout | Royal Bridal"
         description="Complete your Royal Bridal order securely."
       />
       <Link
         to="/cart"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-stone-500 hover:text-[#7d2034]"
+        className="mb-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[.14em] text-stone-500 hover:text-[#7d2034]"
       >
         <ArrowLeft size={16} /> Back to bag
       </Link>
 
-      <h1 className="font-serif text-3xl sm:text-4xl text-stone-900">Checkout</h1>
+      <p className="text-[10px] font-bold uppercase tracking-[.24em] text-[#9b6b35]">Secure checkout</p><h1 className="mt-2 font-serif text-4xl tracking-[-.025em] text-stone-900 sm:text-5xl">Checkout</h1>
 
-      <form onSubmit={submit} className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
+      <form onSubmit={submit} className="mt-9 grid gap-10 lg:grid-cols-[1fr_380px]">
         <div className="space-y-8">
           {/* Contact Details */}
-          <section className="rounded-lg border border-stone-200 bg-white p-6">
-            <h2 className="font-serif text-xl text-stone-900 mb-4">Contact Information</h2>
+          <section className="border-y border-[#ded5cd] bg-white p-6 sm:p-7">
+            <h2 className="mb-5 font-serif text-2xl text-stone-900">Contact Information</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">
@@ -177,7 +177,7 @@ function Checkout() {
                   value={form.name}
                   onChange={update}
                   placeholder="e.g. Priya Sharma"
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-12 w-full border border-stone-300 px-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
               <div>
@@ -190,7 +190,7 @@ function Checkout() {
                   value={form.phone}
                   onChange={update}
                   placeholder="e.g. 9876543210"
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-12 w-full border border-stone-300 px-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -203,15 +203,15 @@ function Checkout() {
                   value={form.email}
                   onChange={update}
                   placeholder="e.g. priya@example.com"
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-12 w-full border border-stone-300 px-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
             </div>
           </section>
 
           {/* Delivery Address */}
-          <section className="rounded-lg border border-stone-200 bg-white p-6">
-            <h2 className="font-serif text-xl text-stone-900 mb-4">Delivery Address</h2>
+          <section className="border-y border-[#ded5cd] bg-white p-6 sm:p-7">
+            <h2 className="mb-5 font-serif text-2xl text-stone-900">Delivery Address</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">
@@ -223,7 +223,7 @@ function Checkout() {
                   value={form.addressLine1}
                   onChange={update}
                   placeholder="House/Flat No., Building Name, Street"
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-12 w-full border border-stone-300 px-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -235,7 +235,7 @@ function Checkout() {
                   value={form.addressLine2}
                   onChange={update}
                   placeholder="Landmark, Area (optional)"
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-12 w-full border border-stone-300 px-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
               <div>
@@ -248,7 +248,7 @@ function Checkout() {
                   value={form.city}
                   onChange={update}
                   placeholder="City"
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-12 w-full border border-stone-300 px-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
               <div>
@@ -261,7 +261,7 @@ function Checkout() {
                   value={form.state}
                   onChange={update}
                   placeholder="State"
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-12 w-full border border-stone-300 px-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
               <div>
@@ -274,7 +274,7 @@ function Checkout() {
                   value={form.pincode}
                   onChange={update}
                   placeholder="6-digit PIN code"
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-12 w-full border border-stone-300 px-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
               <div className="sm:col-span-2">
@@ -287,15 +287,15 @@ function Checkout() {
                   value={form.notes}
                   onChange={update}
                   placeholder="Any special instructions for delivery or sizing..."
-                  className="w-full rounded-md border border-stone-300 p-3 text-sm outline-none focus:border-[#7d2034]"
+                  className="min-h-20 w-full border border-stone-300 px-3 py-3 text-sm outline-none transition focus:border-[#7d2034]"
                 />
               </div>
             </div>
           </section>
 
           {/* Shipping Method */}
-          <section className="rounded-lg border border-stone-200 bg-white p-6">
-            <h2 className="font-serif text-xl text-stone-900 mb-4">Shipping Method</h2>
+          <section className="border-y border-[#ded5cd] bg-white p-6 sm:p-7">
+            <h2 className="mb-5 font-serif text-2xl text-stone-900">Shipping Method</h2>
             <div className="grid gap-3 sm:grid-cols-2">
               <label
                 className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition ${
@@ -348,8 +348,8 @@ function Checkout() {
           </section>
 
           {/* Payment Method */}
-          <section className="rounded-lg border border-stone-200 bg-white p-6">
-            <h2 className="font-serif text-xl text-stone-900 mb-4">Payment Method</h2>
+          <section className="border-y border-[#ded5cd] bg-white p-6 sm:p-7">
+            <h2 className="mb-5 font-serif text-2xl text-stone-900">Payment Method</h2>
             <div className="space-y-3">
               <label
                 className={`flex cursor-pointer items-center justify-between rounded-lg border p-4 transition ${
@@ -406,7 +406,7 @@ function Checkout() {
         </div>
 
         {/* Order Summary Sidebar */}
-        <aside className="h-fit rounded-lg bg-[#f9f5f0] p-6 sm:p-8">
+        <aside className="h-fit border-y border-[#ded5cd] bg-[#f5ede5] p-6 sm:p-8 lg:sticky lg:top-24">
           <h2 className="font-serif text-2xl text-stone-900">Order Summary</h2>
 
           <div className="mt-4 max-h-60 overflow-y-auto divide-y divide-stone-200 pr-1">
