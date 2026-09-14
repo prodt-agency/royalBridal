@@ -17,7 +17,7 @@ function ProductCard({ product }) {
       >
         <div className="relative aspect-[4/5] overflow-hidden bg-[#eee4da]">
           {isOnSale && (
-            <span className="absolute top-2 left-2 z-10 rounded bg-[#7d2034] px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
+            <span className="absolute top-3 left-3 z-10 bg-[#7d2034] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white">
               Sale
             </span>
           )}
@@ -39,14 +39,14 @@ function ProductCard({ product }) {
                 {product.category.name}
               </p>
             )}
-            <h3 className="mt-1 font-serif text-lg leading-tight text-stone-900 transition group-hover:text-[#7d2034] sm:text-xl">
+            <h3 className="mt-1 min-h-[2.5rem] font-serif text-lg leading-tight text-stone-900 transition group-hover:text-[#7d2034] sm:text-xl">
               {product.name}
             </h3>
           </div>
-          <ShoppingBag size={17} className="mt-1 shrink-0 text-[#7d2034]" />
+          <ShoppingBag size={16} className="mt-1 shrink-0 text-[#7d2034]" aria-hidden="true" />
         </div>
         <div className="mt-2 flex items-center gap-2">
-          <p className="text-sm font-semibold text-stone-800">₹{price}</p>
+          <p className="text-sm font-semibold text-[#24181a]">₹{price}</p>
           {isOnSale && (
             <p className="text-xs text-stone-400 line-through">
               ₹{product.price}

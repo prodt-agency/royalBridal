@@ -4,7 +4,7 @@ function SectionHeading({ eyebrow, title, description, align = "center" }) {
   return (
     <div
       className={clsx(
-        "mb-9 max-w-2xl",
+        "mb-8 max-w-2xl sm:mb-10",
         align === "center" && "mx-auto text-center",
       )}
     >
@@ -13,11 +13,11 @@ function SectionHeading({ eyebrow, title, description, align = "center" }) {
           {eyebrow}
         </p>
       )}
-      <h2 className="font-serif text-3xl leading-tight text-stone-900 sm:text-4xl">
+      <h2 className="font-serif text-3xl leading-[1.08] tracking-[-.025em] text-[#24181a] sm:text-4xl">
         {title}
       </h2>
       {description && (
-        <p className="mt-3 text-sm leading-6 text-stone-600">{description}</p>
+        <p className="mt-4 text-sm leading-6 text-stone-600">{description}</p>
       )}
     </div>
   );

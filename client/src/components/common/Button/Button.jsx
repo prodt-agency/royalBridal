@@ -4,12 +4,12 @@ import Loader from "@/components/common/Loader/Loader";
 const variants = {
   primary: "bg-[#7d2034] text-white hover:bg-[#5f1727]",
   secondary: "border border-[#7d2034] text-[#7d2034] hover:bg-[#f8eff0]",
-  ghost: "text-stone-700 hover:bg-stone-100",
+  ghost: "text-stone-700 hover:bg-[#f5ede5]",
 };
 const sizes = {
-  sm: "px-4 py-2 text-xs",
-  md: "px-5 py-3 text-sm",
-  lg: "px-6 py-3.5 text-sm",
+  sm: "min-h-10 px-4 py-2 text-[11px]",
+  md: "min-h-11 px-5 py-3 text-xs",
+  lg: "min-h-12 px-6 py-3.5 text-xs",
 };
 
 function Button({
@@ -27,7 +27,7 @@ function Button({
       type={type}
       disabled={loading || disabled}
       className={clsx(
-        "inline-flex items-center justify-center gap-2 rounded-full font-semibold uppercase tracking-[.14em] transition disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex items-center justify-center gap-2 rounded-sm font-semibold uppercase tracking-[.14em] transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-60",
         variants[variant],
         sizes[size],
         className,

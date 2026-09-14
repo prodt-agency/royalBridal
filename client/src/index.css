@@ -4,3 +4,12 @@
   --font-serif: Georgia, "Times New Roman", serif;
 }
 
+:root {
+  --rb-burgundy: #7d2034;
+  --rb-burgundy-dark: #5f1727;
+  --rb-gold: #9b6b35;
+  --rb-champagne: #e6c98c;
+  --rb-ink: #24181a;
+  --rb-paper: #fbf8f5;
+}
+
