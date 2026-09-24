@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, UploadCloud, X, Plus, Trash2, AlertCircle } from "lucide-react";
 import Button from "@/components/common/Button/Button";
@@ -36,6 +36,7 @@ function AdminProductForm() {
   const [active, setActive] = useState(true);
   const [images, setImages] = useState([]);
   const [sizes, setSizes] = useState(initialSizes);
+  const uploadedPublicIds = useRef(new Set());
 
   useEffect(() => {
     adminService
@@ -66,7 +67,7 @@ function AdminProductForm() {
             setDescription(found.description || "");
             setFeatured(Boolean(found.featured));
             setActive(Boolean(found.active));
-            setImages(found.images?.map((img, i) => ({ imageUrl: img.imageUrl, sortOrder: i })) || []);
+            setImages(found.images?.map((img, i) => ({ ...img, sortOrder: i, isNew: false })) || []);
             setSizes(
               found.sizes?.length > 0
                 ? found.sizes.map((s) => ({ size: s.size, stock: s.stock }))
@@ -92,8 +93,11 @@ function AdminProductForm() {
       const uploadedFiles = res.files || [];
       const newImages = uploadedFiles.map((file, idx) => ({
         imageUrl: file.url,
+        cloudinaryPublicId: file.publicId,
         sortOrder: images.length + idx,
+        isNew: true,
       }));
+      newImages.forEach((image) => uploadedPublicIds.current.add(image.cloudinaryPublicId));
       setImages((prev) => [...prev, ...newImages]);
     } catch (err) {
       setError(getErrorMessage(err) || "Failed to upload image. Allowed formats: JPEG, PNG, WebP (Max 5MB).");
@@ -103,7 +107,17 @@ function AdminProductForm() {
     }
   };
 
-  const removeImage = (index) => {
+  const removeImage = async (index) => {
+    const image = images[index];
+    if (image?.isNew && image.cloudinaryPublicId) {
+      try {
+        await adminService.deleteImage(image.cloudinaryPublicId);
+        uploadedPublicIds.current.delete(image.cloudinaryPublicId);
+      } catch (err) {
+        setError(getErrorMessage(err) || "Failed to delete the uploaded image. Please try again.");
+        return;
+      }
+    }
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -150,7 +164,11 @@ function AdminProductForm() {
         description: description.trim() || null,
         featured: Boolean(featured),
         active: Boolean(active),
-        images: images.map((img, i) => ({ imageUrl: img.imageUrl, sortOrder: i })),
+        images: images.map((img, i) => ({
+          imageUrl: img.imageUrl,
+          cloudinaryPublicId: img.cloudinaryPublicId || null,
+          sortOrder: i,
+        })),
         sizes: sizes.filter((s) => s.size.trim() !== "").map((s) => ({
           size: s.size.trim(),
           stock: Number(s.stock) || 0,
@@ -163,8 +181,18 @@ function AdminProductForm() {
         await adminService.createProduct(payload);
       }
 
+      uploadedPublicIds.current.clear();
       navigate("/admin/products");
     } catch (err) {
+      // A definite API rejection means these newly uploaded assets cannot have been
+      // attached to a product. Do not clean up after network errors, where the save
+      // result is unknown.
+      if (err.response) {
+        await Promise.allSettled(
+          [...uploadedPublicIds.current].map((publicId) => adminService.deleteImage(publicId)),
+        );
+        uploadedPublicIds.current.clear();
+      }
       setError(getErrorMessage(err));
       setSubmitting(false);
     }

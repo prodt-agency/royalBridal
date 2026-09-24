@@ -47,5 +47,5 @@ export const adminService = {
     });
     return unwrap(res);
   },
-  deleteImage: async (key) => unwrap(await api.delete(`/uploads/${key}`)),
+  deleteImage: async (key) => unwrap(await api.delete(`/uploads/${encodeURIComponent(key)}`)),
 };
