@@ -19,6 +19,9 @@ const schema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
   REFRESH_TOKEN_DAYS: z.coerce.number().int().min(1).max(30).default(7),
   UPLOAD_DIRECTORY: z.string().default("./public/uploads"),
+  CLOUDINARY_CLOUD_NAME: z.string().trim().min(1),
+  CLOUDINARY_API_KEY: z.string().trim().min(1),
+  CLOUDINARY_API_SECRET: z.string().trim().min(1),
   RAZORPAY_KEY_ID: z.string().min(1).optional(),
   RAZORPAY_KEY_SECRET: z.string().min(1).optional(),
 });
@@ -39,6 +42,9 @@ export const env = Object.freeze({
   jwtRefreshExpiresIn: value.JWT_REFRESH_EXPIRES_IN,
   refreshTokenDays: value.REFRESH_TOKEN_DAYS,
   uploadDirectory: path.resolve(value.UPLOAD_DIRECTORY),
+  cloudinaryCloudName: value.CLOUDINARY_CLOUD_NAME,
+  cloudinaryApiKey: value.CLOUDINARY_API_KEY,
+  cloudinaryApiSecret: value.CLOUDINARY_API_SECRET,
   razorpayKeyId: value.RAZORPAY_KEY_ID,
   razorpayKeySecret: value.RAZORPAY_KEY_SECRET,
 });
