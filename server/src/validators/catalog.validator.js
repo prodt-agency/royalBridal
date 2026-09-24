@@ -23,6 +23,7 @@ const product = z.object({
     .array(
       z.object({
         imageUrl: z.string().trim().min(1),
+        cloudinaryPublicId: z.string().trim().min(1).max(500).optional().nullable(),
         sortOrder: z.number().int().min(0).optional(),
       }),
     )
