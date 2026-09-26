@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "postinstall": "prisma generate",
-    "build": "npx prisma generate && npx prisma migrate deploy",
+    "prestart": "prisma generate",
+    "build": "prisma generate && prisma migrate deploy",
     "start": "node src/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -32,7 +33,6 @@
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
-    "postinstall": "^0.11.2",
     "prisma": "^6.19.0",
     "razorpay": "^2.9.8",
     "zod": "^4.4.3"
