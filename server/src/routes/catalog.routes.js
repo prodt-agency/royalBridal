@@ -32,7 +32,7 @@ categories.patch(
 categories.delete(
   "/:id",
   requireAdmin,
-  requireRole("SUPER_ADMIN"),
+  requireRole("SUPER_ADMIN", "ADMIN"),
   validate(categoryIdSchema),
   asyncHandler(catalogController.deleteCategory),
 );
