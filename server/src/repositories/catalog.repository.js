@@ -44,26 +44,18 @@ export const catalogRepository = {
   findProductById: (id) =>
     prisma.product.findUnique({ where: { id }, include: productInclude }),
   createProduct: (data) =>
-    prisma.$transaction((tx) =>
-      tx.product.create({ data, include: productInclude }),
-    ),
+    prisma.product.create({ data, include: productInclude }),
   updateProduct: (id, data) =>
-    prisma.$transaction((tx) =>
-      tx.product.update({ where: { id }, data, include: productInclude }),
-    ),
+    prisma.product.update({ where: { id }, data, include: productInclude }),
   softDeleteProduct: (id, adminId) =>
-    prisma.$transaction((tx) =>
-      tx.product.update({
-        where: { id },
-        data: { active: false, deletedAt: new Date(), deletedById: adminId },
-      }),
-    ),
+    prisma.product.update({
+      where: { id },
+      data: { active: false, deletedAt: new Date(), deletedById: adminId },
+    }),
   restoreProduct: (id) =>
-    prisma.$transaction((tx) =>
-      tx.product.update({
-        where: { id },
-        data: { active: true, deletedAt: null, deletedById: null },
-        include: productInclude,
-      }),
-    ),
+    prisma.product.update({
+      where: { id },
+      data: { active: true, deletedAt: null, deletedById: null },
+      include: productInclude,
+    }),
 };
