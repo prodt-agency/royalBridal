@@ -1,13 +1,13 @@
 export const SITE = {
   NAME: "Royal Bridal",
 
-  PHONE: "+91 9999999999",
+  PHONE: "+91 7792848096",
 
-  WHATSAPP: "919999999999",
+  WHATSAPP: "917792848096",
 
-  EMAIL: "support@royalbridal.co",
+  EMAIL: "contact@royalbridal.co",
 
-  INSTAGRAM: "https://instagram.com/royalbridal",
+  INSTAGRAM: "https://www.instagram.com/royal.bridal.chuda/",
 
   FACEBOOK: "",
 
