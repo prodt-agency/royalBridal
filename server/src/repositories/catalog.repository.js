@@ -12,10 +12,16 @@ export const catalogRepository = {
       orderBy: { name: "asc" },
     }),
   findCategory: (id) => prisma.category.findUnique({ where: { id } }),
+  // `products` counts active products only. Inactive/soft-deleted products must
+  // not block category deletion.
   categoryUsage: (id) =>
     prisma.category.findUnique({
       where: { id },
-      select: { _count: { select: { children: true, products: true } } },
+      select: {
+        _count: {
+          select: { children: true, products: { where: { active: true } } },
+        },
+      },
     }),
   createCategory: (data) => prisma.category.create({ data }),
   updateCategory: (id, data) => prisma.category.update({ where: { id }, data }),
