@@ -47,10 +47,10 @@ function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#1f1517] px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#1f1517] px-4 py-8 sm:py-12">
       <Seo title="Admin Login | Royal Bridal" />
 
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-2xl">
+      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl sm:p-8">
         <div className="text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#7d2034]/10 text-[#7d2034]">
             <Shield size={24} />

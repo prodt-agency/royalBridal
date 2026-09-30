@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Package,
@@ -25,10 +25,39 @@ const NAV_ITEMS = [
 
 function AdminLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = useAdminAuthStore((state) => state.token);
   const admin = useAdminAuthStore((state) => state.admin);
   const logout = useAdminAuthStore((state) => state.logout);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // The drawer is keyed to the route it was opened on, so any navigation closes
+  // it without an extra render pass.
+  const [drawerRoute, setDrawerRoute] = useState(null);
+  const sidebarOpen = drawerRoute === location.pathname;
+
+  const openSidebar = useCallback(() => {
+    setDrawerRoute(location.pathname);
+  }, [location.pathname]);
+
+  const closeSidebar = useCallback(() => setDrawerRoute(null), []);
+
+  // Escape closes the drawer, and the page behind it must not scroll.
+  useEffect(() => {
+    if (!sidebarOpen) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") closeSidebar();
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [sidebarOpen, closeSidebar]);
 
   // If not logged in, redirect to login
   if (!token) {
@@ -48,46 +77,54 @@ function AdminLayout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-stone-100 text-stone-900 font-sans">
+    <div className="flex min-h-screen bg-stone-100 font-sans text-stone-900">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
+          onClick={closeSidebar}
+          aria-hidden="true"
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-[#1f1517] text-stone-200 transition-transform duration-300 lg:static lg:translate-x-0 ${
+        id="admin-sidebar"
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 max-w-[85vw] shrink-0 flex-col overflow-y-auto overscroll-contain bg-[#1f1517] text-stone-200 transition-transform duration-300 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-18 items-center justify-between border-b border-stone-800 px-6">
-          <Link to="/admin/dashboard" className="flex items-center gap-2">
-            <span className="font-serif text-xl font-bold tracking-wide text-[#e6c98c]">
+        <div className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-stone-800 px-4 sm:h-18 sm:px-6">
+          <Link
+            to="/admin/dashboard"
+            onClick={closeSidebar}
+            className="flex min-w-0 items-center gap-2"
+          >
+            <span className="truncate font-serif text-lg font-bold tracking-wide text-[#e6c98c] sm:text-xl">
               Royal Bridal
             </span>
-            <span className="rounded bg-[#7d2034] px-1.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+            <span className="shrink-0 rounded bg-[#7d2034] px-1.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
               Admin
             </span>
           </Link>
           <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-stone-400 hover:text-white"
+            type="button"
+            onClick={closeSidebar}
+            aria-label="Close menu"
+            className="-mr-2 shrink-0 rounded-md p-2.5 text-stone-400 transition hover:bg-white/10 hover:text-white lg:hidden"
           >
             <X size={20} />
           </button>
         </div>
 
-        <nav className="flex-1 space-y-1.5 px-4 py-6">
+        <nav className="flex-1 space-y-1.5 px-3 py-5 sm:px-4 sm:py-6">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
-                onClick={() => setSidebarOpen(false)}
+                onClick={closeSidebar}
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
                     isActive
@@ -96,18 +133,20 @@ function AdminLayout() {
                   }`
                 }
               >
-                <Icon size={18} />
+                <Icon size={18} className="shrink-0" />
                 {item.name}
               </NavLink>
             );
           })}
         </nav>
 
-        <div className="border-t border-stone-800 p-4">
+        <div className="shrink-0 border-t border-stone-800 p-4">
           <div className="mb-3 px-2">
-            <p className="text-xs font-semibold text-white truncate">{admin?.name || "Admin"}</p>
-            <p className="text-[11px] text-stone-400 truncate">{admin?.email}</p>
-            <span className="inline-block mt-1 text-[10px] uppercase font-bold text-[#d5aa65]">
+            <p className="truncate text-xs font-semibold text-white">
+              {admin?.name || "Admin"}
+            </p>
+            <p className="truncate text-[11px] text-stone-400">{admin?.email}</p>
+            <span className="mt-1 inline-block text-[10px] font-bold tracking-wider text-[#d5aa65] uppercase">
               {admin?.role || "ADMIN"}
             </span>
           </div>
@@ -117,54 +156,59 @@ function AdminLayout() {
               href="/"
               target="_blank"
               rel="noreferrer"
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-stone-300 hover:bg-white/10"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-xs font-medium text-stone-300 transition hover:bg-white/10 sm:py-2"
             >
-              <ExternalLink size={15} /> View Storefront
+              <ExternalLink size={15} className="shrink-0" /> View Storefront
             </a>
             <button
               type="button"
               onClick={handleLogout}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 transition"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-xs font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300 sm:py-2"
             >
-              <LogOut size={15} /> Logout
+              <LogOut size={15} className="shrink-0" /> Logout
             </button>
           </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col">
         {/* Top Header */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-stone-200 bg-white px-6 shadow-sm">
+        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b border-stone-200 bg-white px-3 shadow-sm sm:px-6">
           <button
-            onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-stone-700 hover:text-stone-900"
-            aria-label="Open sidebar"
+            type="button"
+            onClick={() => openSidebar()}
+            aria-label="Open menu"
+            aria-controls="admin-sidebar"
+            aria-expanded={sidebarOpen}
+            className="-ml-1 shrink-0 rounded-md p-2.5 text-stone-700 transition hover:bg-stone-100 hover:text-stone-900 lg:hidden"
           >
             <Menu size={22} />
           </button>
 
-          <div className="hidden lg:flex items-center gap-2 text-xs text-stone-500">
-            <Shield size={14} className="text-[#7d2034]" />
-            <span>Store Administration Portal</span>
+          <div className="hidden min-w-0 items-center gap-2 text-xs text-stone-500 lg:flex">
+            <Shield size={14} className="shrink-0 text-[#7d2034]" />
+            <span className="truncate">Store Administration Portal</span>
           </div>
 
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="ml-auto flex min-w-0 items-center gap-3 sm:gap-4">
             <Link
               to="/"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-stone-600 hover:text-[#7d2034]"
+              className="hidden items-center gap-1.5 text-xs font-medium text-stone-600 transition hover:text-[#7d2034] sm:inline-flex"
             >
-              <ExternalLink size={13} /> Live Store
+              <ExternalLink size={13} className="shrink-0" /> Live Store
             </Link>
-            <div className="h-4 w-px bg-stone-200 hidden sm:block" />
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium text-stone-800">{admin?.name || "Admin"}</span>
+            <div className="hidden h-4 w-px bg-stone-200 sm:block" />
+            <div className="flex min-w-0 items-center gap-2 text-sm">
+              <span className="truncate font-medium text-stone-800">
+                {admin?.name || "Admin"}
+              </span>
             </div>
           </div>
         </header>
 
         {/* Content Outlet */}
-        <main className="flex-1 p-6 sm:p-8">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>
