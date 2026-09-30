@@ -1,6 +1,14 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Plus, Search, Edit2, Trash2, RotateCcw, Eye, Sparkles } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  RotateCcw,
+  Eye,
+  Sparkles,
+} from "lucide-react";
 import Loader from "@/components/common/Loader/Loader";
 import EmptyState from "@/components/common/EmptyState/EmptyState";
 import Seo from "@/components/Seo";
@@ -20,13 +28,14 @@ function AdminProducts() {
   const page = Number(params.get("page") ?? 1);
   const search = params.get("search") || undefined;
   const category = params.get("category") || undefined;
-  const active = params.get("active") !== null ? params.get("active") === "true" : undefined;
+  const active =
+    params.get("active") !== null ? params.get("active") === "true" : undefined;
 
   const loadCategories = useCallback(() => {
     adminService
       .getCategories()
       .then((data) => {
-        setCategories(Array.isArray(data) ? data : data?.data ?? []);
+        setCategories(Array.isArray(data) ? data : (data?.data ?? []));
       })
       .catch(() => {});
   }, []);
@@ -67,7 +76,12 @@ function AdminProducts() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to deactivate/delete this product?")) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to deactivate/delete this product?",
+      )
+    )
+      return;
     setActionLoading(id);
     try {
       await adminService.deleteProduct(id);
@@ -106,7 +120,7 @@ function AdminProducts() {
         </div>
         <Link
           to="/admin/products/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-[#7d2034] px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow hover:bg-[#681a2b] transition"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#7d2034] px-4 py-2.5 text-xs sm:text-sm font-semibold !text-white shadow hover:bg-[#681a2b] transition"
         >
           <Plus size={16} /> Add Product
         </Link>
@@ -115,7 +129,10 @@ function AdminProducts() {
       {/* Filters Bar */}
       <div className="grid gap-3 sm:grid-cols-3 rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
         <div className="relative">
-          <Search size={16} className="absolute left-3.5 top-3 text-stone-400" />
+          <Search
+            size={16}
+            className="absolute left-3.5 top-3 text-stone-400"
+          />
           <input
             value={params.get("search") ?? ""}
             onChange={(e) => updateParams({ search: e.target.value })}
@@ -169,7 +186,7 @@ function AdminProducts() {
               title="No products found"
               description="Try adjusting your filters or create a new product."
               actionText="Add New Product"
-              onAction={() => window.location.href = "/admin/products/new"}
+              onAction={() => (window.location.href = "/admin/products/new")}
             />
           </div>
         ) : (
@@ -209,11 +226,16 @@ function AdminProducts() {
                               <span>{p.name}</span>
                               {p.featured && (
                                 <span title="Featured">
-                                  <Sparkles size={13} className="text-amber-500" />
+                                  <Sparkles
+                                    size={13}
+                                    className="text-amber-500"
+                                  />
                                 </span>
                               )}
                             </div>
-                            <span className="text-xs text-stone-400">/{p.slug}</span>
+                            <span className="text-xs text-stone-400">
+                              /{p.slug}
+                            </span>
                           </div>
                         </div>
                       </td>
@@ -313,7 +335,8 @@ function AdminProducts() {
         {!loading && meta.totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-stone-200 px-6 py-4 text-xs text-stone-600">
             <span>
-              Showing Page {meta.page} of {meta.totalPages} ({meta.total} products)
+              Showing Page {meta.page} of {meta.totalPages} ({meta.total}{" "}
+              products)
             </span>
             <div className="flex gap-2">
               <button
