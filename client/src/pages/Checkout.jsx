@@ -66,7 +66,9 @@ function Checkout() {
         paymentMethod: form.paymentMethod,
         items: items.map((item) => ({
           productId: Number(item.id),
-          size: item.size || "Standard",
+          // `null` for products whose category has no size variants (Kaleere).
+          // The API rejects a missing size only for categories that sell sizes.
+          size: item.size ?? null,
           quantity: Number(item.quantity),
         })),
       };

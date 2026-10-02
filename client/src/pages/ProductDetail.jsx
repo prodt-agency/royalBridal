@@ -7,6 +7,7 @@ import EmptyState from "@/components/common/EmptyState/EmptyState";
 import Loader from "@/components/common/Loader/Loader";
 import ProductGrid from "@/components/home/ProductGrid";
 import Seo from "@/components/Seo";
+import { DEFAULT_PRODUCT_SIZES, requiresSize } from "@/constants/category";
 import { productService } from "@/services/product.service";
 import useCartStore from "@/store/cartStore";
 import { getErrorMessage } from "@/utils/apiError";
@@ -33,8 +34,9 @@ function ProductDetail() {
         if (!live) return;
         setProduct(data);
         setError("");
-        const initialSize = data.sizes?.[0]?.size ?? (data.sizes?.length === 0 ? "Standard" : "");
-        setSize(initialSize);
+        // Size-free categories (Kaleere) are sold as-is and carry no size.
+        const sizeFree = !requiresSize(data.category);
+        setSize(sizeFree ? null : (data.sizes?.[0]?.size ?? ""));
 
         if (data.category?.slug) {
           return productService
@@ -85,20 +87,28 @@ function ProductDetail() {
   const images = product.images ?? [];
   const price = product.salePrice ?? product.price;
   const isOnSale = Boolean(product.salePrice && Number(product.salePrice) < Number(product.price));
-  const hasSizes = Array.isArray(product.sizes) && product.sizes.length > 0;
-  const currentSizeObj = hasSizes ? product.sizes.find((s) => s.size === size) : null;
-  const availableStock = currentSizeObj ? currentSizeObj.stock : (product.stock ?? 0);
+  const needsSize = requiresSize(product.category);
+  // Size-bearing products always offer their sizes; fall back to the standard
+  // range if the record somehow has none so the selector never renders empty.
+  const sizeOptions = needsSize
+    ? (product.sizes?.length
+        ? product.sizes
+        : DEFAULT_PRODUCT_SIZES.map((entry) => ({ size: entry, stock: product.stock ?? 0 })))
+    : [];
+  const currentSizeObj = sizeOptions.find((entry) => entry.size === size) ?? null;
+  const availableStock = needsSize
+    ? (currentSizeObj ? currentSizeObj.stock : 0)
+    : (product.stock ?? 0);
   const isOutOfStock = availableStock <= 0;
 
   const handleAddToCart = () => {
-    const chosenSize = hasSizes ? size : "Standard";
     addItem({
       id: product.id,
       slug: product.slug,
       name: product.name,
       price: Number(price),
       image: images[0]?.imageUrl,
-      size: chosenSize,
+      size: needsSize ? size : null,
       stock: availableStock,
       quantity,
     });
@@ -193,7 +203,7 @@ function ProductDetail() {
               </p>
             )}
 
-            {hasSizes && (
+            {needsSize && (
               <fieldset className="mt-8 border-t border-[#e4dbd3] pt-7">
                 <div className="flex items-center justify-between">
                   <legend className="text-sm font-semibold text-stone-900">
@@ -208,7 +218,7 @@ function ProductDetail() {
                   )}
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {product.sizes.map((entry) => {
+                  {sizeOptions.map((entry) => {
                     const isSelected = size === entry.size;
                     const out = entry.stock <= 0;
                     return (
@@ -262,7 +272,7 @@ function ProductDetail() {
 
               <Button
                 className="flex-1 py-3 text-sm"
-                disabled={isOutOfStock || (hasSizes && !size)}
+                disabled={isOutOfStock || (needsSize && !size)}
                 onClick={handleAddToCart}
               >
                 {added ? (

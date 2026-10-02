@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
-import { ConflictError, NotFoundError } from '../utils/app-error.js';
+import { ConflictError, NotFoundError, ValidationError } from '../utils/app-error.js';
+import { requiresSize } from '../constants/category.js';
 import { checkoutRepository } from '../repositories/checkout.repository.js';
 import { inventoryService } from './inventory.service.js';
 
@@ -9,10 +10,23 @@ const number = () => `RB-${new Date().getFullYear()}-${crypto.randomBytes(5).toS
 const groupItems = (items) => {
   const grouped = new Map();
   items.forEach((item) => {
-    const key = `${item.productId}:${item.size}`;
+    const key = `${item.productId}:${item.size ?? ''}`;
     grouped.set(key, { ...item, quantity: (grouped.get(key)?.quantity ?? 0) + item.quantity });
   });
   return [...grouped.values()];
+};
+
+/**
+ * A size is required only for categories that actually sell size variants.
+ * Size-free categories (Kaleere) resolve to `null` so the order line records
+ * "no size selected" instead of a placeholder value.
+ */
+const resolveSize = (product, requested) => {
+  if (!requiresSize(product.category)) return null;
+  if (!requested) throw new ValidationError(`Select a size for ${product.name}.`);
+  const variant = product.sizes.find((entry) => entry.size === requested);
+  if (!variant) throw new ValidationError(`Size ${requested} is unavailable for ${product.name}.`);
+  return variant.size;
 };
 
 export const checkoutService = {
@@ -31,9 +45,8 @@ export const checkoutService = {
       const productsById = new Map(products.map((product) => [product.id, product]));
       const lines = items.map((item) => {
         const product = productsById.get(item.productId);
-        const size = product.sizes.find((entry) => entry.size === item.size);
-        if (!size) throw new NotFoundError(`Size ${item.size} is unavailable.`);
-        return { ...item, price: Number(product.salePrice ?? product.price) };
+        const size = resolveSize(product, item.size);
+        return { ...item, size, price: Number(product.salePrice ?? product.price) };
       });
 
       const customer = await checkoutRepository.upsertCustomer(tx, payload);

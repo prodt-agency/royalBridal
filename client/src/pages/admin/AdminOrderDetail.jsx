@@ -181,7 +181,7 @@ function AdminOrderDetail() {
                     <p className="text-xs break-words text-stone-500">
                       Size:{" "}
                       <span className="font-semibold text-stone-700">
-                        {item.selectedSize}
+                        {formatOrderSize(item.selectedSize)}
                       </span>{" "}
                       • Qty: {item.quantity} • Unit: ₹{item.price}
                     </p>

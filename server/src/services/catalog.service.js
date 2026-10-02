@@ -1,4 +1,5 @@
 import { ConflictError, NotFoundError } from "../utils/app-error.js";
+import { defaultSizeRows, requiresSize } from "../constants/category.js";
 import { catalogRepository } from "../repositories/catalog.repository.js";
 import { createSlug } from "../utils/slug.js";
 import { getPagination, paginated } from "../utils/pagination.js";
@@ -25,7 +26,24 @@ const ensureSku = async (sku, currentId) => {
   if (found && found.id !== currentId)
     throw new ConflictError("SKU is already in use.");
 };
-const productData = async (data, currentId) => {
+
+/**
+ * Size variants only exist for categories that sell them.
+ *
+ * A size-free category (Kaleere) always clears the rows, including any stale ones
+ * left behind by a previous category. A size-bearing category keeps the submitted
+ * rows, falling back to the standard range when none were supplied, so a new
+ * product is orderable straight away.
+ */
+const sizeWrites = (submitted, currentId, category) => {
+  if (!requiresSize(category)) {
+    return currentId ? { deleteMany: {} } : { create: [] };
+  }
+  const rows = submitted?.length ? submitted : defaultSizeRows();
+  return currentId ? { deleteMany: {}, create: rows } : { create: rows };
+};
+
+const productData = async (data, currentId, category) => {
   const { images, sizes, ...product } = data;
   const base = {
     ...product,
@@ -37,12 +55,10 @@ const productData = async (data, currentId) => {
     base.images = currentId
       ? { deleteMany: {}, create: images }
       : { create: images };
-  if (sizes)
-    base.sizes = currentId
-      ? { deleteMany: {}, create: sizes }
-      : { create: sizes };
+  base.sizes = sizeWrites(sizes, currentId, category);
   return base;
 };
+
 const productWhere = (query) => {
   const where = {
     deletedAt: null,
@@ -120,23 +136,26 @@ export const catalogService = {
     return product;
   },
   createProduct: async (data) => {
-    if (!(await catalogRepository.findCategory(data.categoryId)))
-      throw new NotFoundError("Category not found.");
+    const category = await catalogRepository.findCategory(data.categoryId);
+    if (!category) throw new NotFoundError("Category not found.");
     await ensureSku(data.sku);
-    return catalogRepository.createProduct(await productData(data));
+    return catalogRepository.createProduct(
+      await productData(data, undefined, category),
+    );
   },
   updateProduct: async (id, data) => {
     const existing = await catalogRepository.findProductById(id);
     if (!existing) throw new NotFoundError("Product not found.");
-    if (
-      data.categoryId &&
-      !(await catalogRepository.findCategory(data.categoryId))
-    )
-      throw new NotFoundError("Category not found.");
+    // The target category is what decides the size rules, so a category change is
+    // honoured on the same save.
+    const category = data.categoryId
+      ? await catalogRepository.findCategory(data.categoryId)
+      : existing.category;
+    if (!category) throw new NotFoundError("Category not found.");
     if (data.sku) await ensureSku(data.sku, id);
     const updated = await catalogRepository.updateProduct(
       id,
-      await productData(data, id),
+      await productData(data, id, category),
     );
     if (data.images)
       await deleteRemovedCloudinaryImages(existing.images, data.images);

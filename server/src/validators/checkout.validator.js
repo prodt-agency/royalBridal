@@ -1,3 +1,6 @@
 import { z } from 'zod';
-const item = z.object({ productId: z.coerce.number().int().positive(), size: z.string().trim().min(1).max(40), quantity: z.coerce.number().int().min(1).max(10) });
+// `size` is optional here because whether it is required depends on the product's
+// category, which is only known after the products are loaded. The conditional
+// requirement is enforced in checkoutService against the category's size rule.
+const item = z.object({ productId: z.coerce.number().int().positive(), size: z.string().trim().min(1).max(40).optional(), quantity: z.coerce.number().int().min(1).max(10) });
 export const checkoutSchema = z.object({ body: z.object({ name: z.string().trim().min(2).max(120), email: z.string().email().max(254).optional(), phone: z.string().trim().regex(/^[0-9+ -]{8,20}$/), addressLine1: z.string().trim().min(5).max(255), addressLine2: z.string().trim().max(255).optional(), city: z.string().trim().min(2).max(80), state: z.string().trim().min(2).max(80), pincode: z.string().trim().regex(/^[0-9A-Za-z -]{4,12}$/), notes: z.string().trim().max(2000).optional(), shippingMethod: z.enum(['STANDARD', 'EXPRESS']).default('STANDARD'), paymentMethod: z.enum(['COD', 'RAZORPAY']), items: z.array(item).min(1).max(20) }).superRefine((body, ctx) => { if (!body.email && !body.phone) ctx.addIssue({ code: 'custom', path: ['email'], message: 'Email or phone is required.' }); }), params: z.object({}), query: z.object({}) });

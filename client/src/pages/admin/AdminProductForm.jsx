@@ -13,15 +13,12 @@ import {
   adminSelectClass,
   adminTextareaClass,
 } from "@/components/admin/adminUi";
+import { defaultSizeRows, requiresSize } from "@/constants/category";
 import { adminService } from "@/services/admin.service";
 import { getErrorMessage } from "@/utils/apiError";
 import { getImageUrl } from "@/utils/image";
 
-const initialSizes = [
-  { size: "2.4", stock: 5 },
-  { size: "2.6", stock: 5 },
-  { size: "2.8", stock: 5 },
-];
+const initialSizes = defaultSizeRows();
 
 function AdminProductForm() {
   const navigate = useNavigate();
@@ -46,6 +43,13 @@ function AdminProductForm() {
   const [images, setImages] = useState([]);
   const [sizes, setSizes] = useState(initialSizes);
   const uploadedPublicIds = useRef(new Set());
+
+  // Kaleere and any other size-free category have no size variants, so the size
+  // rows are hidden and never submitted for them.
+  const selectedCategory = categories.find(
+    (entry) => String(entry.id) === String(categoryId),
+  );
+  const needsSize = requiresSize(selectedCategory);
 
   useEffect(() => {
     adminService
@@ -157,6 +161,19 @@ function AdminProductForm() {
     setSizes((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Switching category can change whether the product has size variants, so the
+  // rows are reset rather than left stale: moving to a size-free category drops
+  // them, and moving back restores the standard range.
+  const handleCategoryChange = (nextId) => {
+    setCategoryId(nextId);
+    const nextCategory = categories.find((entry) => String(entry.id) === nextId);
+    if (requiresSize(nextCategory)) {
+      setSizes((prev) => (prev.length > 0 ? prev : initialSizes));
+    } else {
+      setSizes([]);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -189,12 +206,18 @@ function AdminProductForm() {
           cloudinaryPublicId: img.cloudinaryPublicId || null,
           sortOrder: i,
         })),
-        sizes: sizes
-          .filter((s) => s.size.trim() !== "")
-          .map((s) => ({
-            size: s.size.trim(),
-            stock: Number(s.stock) || 0,
-          })),
+        // Size-free categories carry no size variants; sending rows would only
+        // create variants the storefront can never offer.
+        ...(needsSize
+          ? {
+              sizes: sizes
+                .filter((s) => s.size.trim() !== "")
+                .map((s) => ({
+                  size: s.size.trim(),
+                  stock: Number(s.stock) || 0,
+                })),
+            }
+          : {}),
       };
 
       if (isEdit) {
@@ -303,7 +326,7 @@ function AdminProductForm() {
                 id="product-category"
                 required
                 value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                onChange={(e) => handleCategoryChange(e.target.value)}
                 className={adminSelectClass}
               >
                 <option value="">Select Category</option>
@@ -317,7 +340,7 @@ function AdminProductForm() {
 
             <div className="min-w-0">
               <label htmlFor="product-stock" className={adminFieldLabel}>
-                Overall Total Stock
+                {needsSize ? "Overall Total Stock" : "Stock"}
               </label>
               <input
                 id="product-stock"
@@ -386,7 +409,8 @@ function AdminProductForm() {
           </div>
         </div>
 
-        {/* Sizes Card */}
+        {/* Sizes Card — hidden for categories without size variants */}
+        {needsSize && (
         <div className={`${adminCardClass} space-y-4`}>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
@@ -394,7 +418,7 @@ function AdminProductForm() {
                 Size Variants
               </h2>
               <p className="text-xs break-words text-stone-500">
-                Configure size options (e.g. 2.4, 2.6, 2.8) and inventory.
+                Configure size options (e.g. 2.2, 2.4, 2.6, 2.8, 2.10) and inventory.
               </p>
             </div>
             <button
@@ -440,6 +464,7 @@ function AdminProductForm() {
             ))}
           </div>
         </div>
+        )}
 
         {/* Images Upload Card */}
         <div className={`${adminCardClass} space-y-4`}>

@@ -206,7 +206,8 @@ model InventoryMovement {
   id        String                @id @default(cuid())
   orderId   Int
   productId Int
-  size      String
+  /// Null for categories without size variants (e.g. Kaleere).
+  size      String?
   quantity  Int
   type      InventoryMovementType
   createdAt DateTime              @default(now())
@@ -232,11 +233,12 @@ model WebhookEvent {
 }
 
 model OrderItem {
-  id           Int     @id @default(autoincrement())
-  orderId      Int
-  productId    Int
-  selectedSize String
-  quantity     Int
+  id      Int     @id @default(autoincrement())
+  orderId Int
+  productId Int
+  /// Null when the product's category has no size variants (e.g. Kaleere).
+  selectedSize String?
+  quantity Int
   price        Decimal @db.Decimal(10, 2)
   order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product      Product @relation(fields: [productId], references: [id])

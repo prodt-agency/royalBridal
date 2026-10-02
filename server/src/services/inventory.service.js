@@ -4,7 +4,9 @@ import { inventoryRepository } from '../repositories/inventory.repository.js';
 const unavailable = (error, items) => {
   if (error.message !== 'INVENTORY_UNAVAILABLE') throw error;
   const item = items[0];
-  throw new ConflictError(`Insufficient stock for product ${item.productId}, size ${item.size}.`);
+  // Size-free categories (Kaleere) reserve against the product's aggregate stock.
+  const scope = item.size == null ? 'the available quantity' : `size ${item.size}`;
+  throw new ConflictError(`Insufficient stock for product ${item.productId} (${scope}).`);
 };
 
 export const inventoryService = {

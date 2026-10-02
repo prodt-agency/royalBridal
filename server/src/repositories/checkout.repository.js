@@ -8,7 +8,7 @@ const checkoutTransactionOptions = {
 
 export const checkoutRepository = {
   transaction: (callback) => prisma.$transaction(callback, checkoutTransactionOptions),
-  productsByIds: (tx, ids) => tx.product.findMany({ where: { id: { in: ids }, active: true, deletedAt: null }, include: { sizes: true } }),
+  productsByIds: (tx, ids) => tx.product.findMany({ where: { id: { in: ids }, active: true, deletedAt: null }, include: { sizes: true, category: { select: { id: true, slug: true, name: true } } } }),
   findCustomer: (tx, email, phone) => tx.customer.findFirst({ where: { OR: [{ phone }, ...(email ? [{ email }] : [])] } }),
   upsertCustomer: async (tx, data) => {
     const current = await tx.customer.findFirst({ where: { OR: [{ phone: data.phone }, ...(data.email ? [{ email: data.email }] : [])] } });
