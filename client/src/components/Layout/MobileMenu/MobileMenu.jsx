@@ -4,6 +4,7 @@ import { X, MessageCircle } from "lucide-react";
 
 import { NAV_LINKS } from "../Navbar/NavLinks";
 import { SITE } from "../../../constants/site";
+import Logo from "@/assets/logo.webp";
 
 function MobileMenu({ isOpen, onClose }) {
   useEffect(() => {
@@ -45,11 +46,12 @@ function MobileMenu({ isOpen, onClose }) {
         `}
       />
 
-      <aside
+<aside
         aria-hidden={!isOpen}
         className={`
           fixed top-0 left-0 z-50
-          h-screen w-80 max-w-[85vw]
+          flex flex-col
+          h-dvh w-80 max-w-[85vw]
           bg-white shadow-xl
           transition-transform duration-300
           ${
@@ -59,20 +61,23 @@ function MobileMenu({ isOpen, onClose }) {
           }
         `}
       >
-        <div className="flex items-center justify-between border-b p-5">
-          <h2 className="text-xl font-bold text-rose-700">
-            Royal Bridal
-          </h2>
+        <div className="flex shrink-0 items-center justify-between border-b p-5">
+          <img
+            src={Logo}
+            alt="Royal Bridal"
+            className="h-8 w-auto max-w-[180px] object-contain"
+          />
 
           <button
             onClick={onClose}
             aria-label="Close Menu"
+            className="shrink-0"
           >
             <X size={26} />
           </button>
         </div>
 
-        <nav className="flex flex-col py-4">
+        <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain py-4">
           {NAV_LINKS.map((link) => (
             <NavLink
               key={link.path}
@@ -97,7 +102,9 @@ function MobileMenu({ isOpen, onClose }) {
           ))}
         </nav>
 
-        <div className="absolute bottom-0 w-full border-t p-5">
+        {/* In normal flow rather than pinned to the panel edge, so it can never
+            be overlapped by a taller link list or pushed off a short screen. */}
+        <div className="shrink-0 border-t p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
           <a
             href={`https://wa.me/${SITE.WHATSAPP}`}
             target="_blank"

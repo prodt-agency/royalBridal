@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Gem, HeartHandshake, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import Container from "@/components/common/Container/Container";
@@ -7,6 +7,7 @@ import Button from "@/components/common/Button/Button";
 import ProductGrid from "@/components/home/ProductGrid";
 import Seo from "@/components/Seo";
 import heroImage from "@/assets/hero.jpg";
+import { MOBILE_ONLY_COLLECTION_SLUGS } from "@/constants/category";
 import { productService } from "@/services/product.service";
 import { getImageUrl } from "@/utils/image";
 
@@ -32,6 +33,24 @@ const getItems = (data) =>
   Array.isArray(data)
     ? data
     : (data?.data ?? data?.products ?? data?.categories ?? []);
+
+/**
+ * The first three collections keep the desktop row exactly as it is. Collections
+ * listed in MOBILE_ONLY_COLLECTION_SLUGS are appended as a fourth card that is
+ * hidden from `sm` up, so phones and small tablets get a 2x2 grid while desktop
+ * still shows three cards in `sm:grid-cols-3`.
+ */
+const splitCollections = (categories) => {
+  const desktop = categories.slice(0, 3);
+  const onDesktop = new Set(desktop.map((category) => category.id));
+  const mobileOnly = categories.filter(
+    (category) =>
+      MOBILE_ONLY_COLLECTION_SLUGS.includes(category.slug) &&
+      !onDesktop.has(category.id),
+  );
+
+  return { desktop, mobileOnly };
+};
 
 function CategoryCard({ category }) {
   return (
@@ -89,6 +108,8 @@ function Home() {
       active = false;
     };
   }, []);
+
+  const collections = useMemo(() => splitCollections(categories), [categories]);
 
   return (
     <>
@@ -170,11 +191,17 @@ function Home() {
                   className="aspect-[4/5] animate-pulse bg-stone-200"
                 />
               ))}
+              <div className="aspect-[4/5] animate-pulse bg-stone-200 sm:hidden" />
             </div>
           ) : categories.length ? (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5">
-              {categories.slice(0, 3).map((category) => (
+              {collections.desktop.map((category) => (
                 <CategoryCard key={category.id} category={category} />
+              ))}
+              {collections.mobileOnly.map((category) => (
+                <div key={category.id} className="sm:hidden">
+                  <CategoryCard category={category} />
+                </div>
               ))}
             </div>
           ) : null}

@@ -2,6 +2,23 @@
 
 @theme {
   --font-serif: Georgia, "Times New Roman", serif;
+
+  /* Announcement ticker. The track holds identical copies and shifts by exactly
+     one copy, so the loop restarts with no visible jump and the speed does not
+     depend on how many copies render. Keep the count in step with
+     MARQUEE_COPIES in AnnouncementBar.jsx.
+     translate3d keeps the movement on the compositor for smooth mobile scroll. */
+  --rb-marquee-copies: 8;
+  --animate-marquee: rb-marquee 20s linear infinite;
+
+  @keyframes rb-marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(calc(-100% / var(--rb-marquee-copies)), 0, 0);
+    }
+  }
 }
 
 :root {

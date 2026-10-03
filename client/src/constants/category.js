@@ -11,6 +11,14 @@
  */
 export const SIZE_FREE_CATEGORY_SLUGS = ["kaleere"];
 
+/**
+ * Collections that join the home collection grid on small screens only, after the
+ * three desktop cards, so the phone grid reads as a balanced 2x2 instead of
+ * squeezing three cards into a row. Matched by slug, and rendered from the
+ * category the API already returns, so the card links to the real category page.
+ */
+export const MOBILE_ONLY_COLLECTION_SLUGS = ["short-chuda"];
+
 export const DEFAULT_PRODUCT_SIZES = ["2.2", "2.4", "2.6", "2.8", "2.10"];
 
 export const DEFAULT_PRODUCT_SIZE_STOCK = 5;
