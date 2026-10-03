@@ -4,6 +4,22 @@ import { Prisma } from '@prisma/client';
 /** Product lines with no size (Kaleere) have no ProductSize row to update. */
 const hasSize = (item) => item.size !== null && item.size !== undefined;
 
+/**
+ * Reserves every cart line in one statement and records a RESERVE movement per
+ * line, returning the number of movements written.
+ *
+ * Two details are specific to PostgreSQL:
+ * - `type` is the `InventoryMovementType` enum, so the literal is cast. Without
+ *   the cast Postgres resolves the UNION ALL output column as `text` and rejects
+ *   the insert (42804: column "type" is of type "InventoryMovementType" but
+ *   expression is of type text).
+ * - The two branches are complementary (`size IS NULL` / `size IS NOT NULL`), so
+ *   each line is written exactly once. A sized line is recorded only when both
+ *   its product and its size reservation succeeded.
+ *
+ * Line values stay Prisma parameters; only fixed SQL literals are inlined.
+ */
+
 const reserveAll = async (tx, orderId, items) => {
   const requestedItems = items.map((item) => Prisma.sql`(
     ${randomUUID()}, ${orderId}, ${item.productId}, ${item.size ?? null}, ${item.quantity}
@@ -42,18 +58,17 @@ const reserveAll = async (tx, orderId, items) => {
       RETURNING product_size."productId" AS product_id, product_size.size
     )
     INSERT INTO "InventoryMovement" ("id", "orderId", "productId", "size", "quantity", "type", "createdAt")
-    SELECT requested.id, requested.order_id, requested.product_id, requested.size, requested.quantity, 'RESERVE', CURRENT_TIMESTAMP
+    SELECT requested.id, requested.order_id, requested.product_id, requested.size, requested.quantity, 'RESERVE'::"InventoryMovementType", CURRENT_TIMESTAMP
     FROM requested
     JOIN updated_products ON updated_products.id = requested.product_id
-    LEFT JOIN updated_sizes ON updated_sizes.product_id = requested.product_id
-      AND updated_sizes.size IS NOT DISTINCT FROM requested.size
-      AND requested.size IS NULL
+    WHERE requested.size IS NULL
     UNION ALL
-    SELECT requested.id, requested.order_id, requested.product_id, requested.size, requested.quantity, 'RESERVE', CURRENT_TIMESTAMP
+    SELECT requested.id, requested.order_id, requested.product_id, requested.size, requested.quantity, 'RESERVE'::"InventoryMovementType", CURRENT_TIMESTAMP
     FROM requested
     JOIN updated_products ON updated_products.id = requested.product_id
     JOIN updated_sizes ON updated_sizes.product_id = requested.product_id
       AND updated_sizes.size IS NOT DISTINCT FROM requested.size
+    WHERE requested.size IS NOT NULL
   `;
 
   if (Number(reservedCount) !== items.length) {
